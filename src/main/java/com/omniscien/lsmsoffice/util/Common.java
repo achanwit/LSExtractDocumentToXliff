@@ -1,4 +1,4 @@
-package util;
+package com.omniscien.lsmsoffice.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -468,28 +468,30 @@ public class Common {
         return sb.toString();
 	}
 	private String loadAsposeLicense() {
+		ReadProp rp = new ReadProp();
 		StringBuilder sbLicense = new StringBuilder();
-		sbLicense.append("<License>\r\n");
-		sbLicense.append("  <Data>\r\n");
-		sbLicense.append("    <LicensedTo>Asia Online Pte Ltd</LicensedTo>\r\n");
-		sbLicense.append("    <EmailTo>greg.binger@omniscien.com</EmailTo>\r\n");
-		sbLicense.append("    <LicenseType>Developer OEM</LicenseType>\r\n");
-		sbLicense.append("    <LicenseNote>Limited to 1 developer, unlimited physical locations</LicenseNote>\r\n");
-		sbLicense.append("    <OrderID>191014055551</OrderID>\r\n");
-		sbLicense.append("    <UserID>135027412</UserID>\r\n");
-		sbLicense.append("    <OEM>This is a redistributable license</OEM>\r\n");
-		sbLicense.append("    <Products>\r\n");
-		sbLicense.append("      <Product>Aspose.Total for Java</Product>\r\n");
-		sbLicense.append("    </Products>\r\n");
-		sbLicense.append("    <EditionType>Enterprise</EditionType>\r\n");
-		sbLicense.append("    <SerialNumber>cdd715c6-ce3b-442a-bac9-a7ee85c471c3</SerialNumber>\r\n");
-		sbLicense.append("    <SubscriptionExpiry>20201015</SubscriptionExpiry>\r\n");
-		sbLicense.append("    <LicenseVersion>3.0</LicenseVersion>\r\n");
-		sbLicense.append("    <LicenseInstructions>https://purchase.aspose.com/policies/use-license</LicenseInstructions>\r\n");
-		sbLicense.append("  </Data>\r\n");
-		sbLicense.append(" \r\n");
-		sbLicense.append("<Signature>bPoEFCdXTWM4HgjFmZ5xPqQgW7JLoLRda4vLgJMyshfqz6h7jwEoUGPzpT5NFdOhxncxc4Oq4jK4OkvMyTxHBBVwIUBFSoqb1lw9FIFa7reU+sK21AlHgg3zb3lrbfG2YvrOGvmEZVEqFPpWhlH8QrJkrOWYnn8UHsfb11eaCYs=</Signature>\r\n");
-		sbLicense.append("</License>\r\n");
+//		sbLicense.append("<License>\r\n");
+//		sbLicense.append("  <Data>\r\n");
+//		sbLicense.append("    <LicensedTo>Asia Online Pte Ltd</LicensedTo>\r\n");
+//		sbLicense.append("    <EmailTo>greg.binger@omniscien.com</EmailTo>\r\n");
+//		sbLicense.append("    <LicenseType>Developer OEM</LicenseType>\r\n");
+//		sbLicense.append("    <LicenseNote>Limited to 1 developer, unlimited physical locations</LicenseNote>\r\n");
+//		sbLicense.append("    <OrderID>191014055551</OrderID>\r\n");
+//		sbLicense.append("    <UserID>135027412</UserID>\r\n");
+//		sbLicense.append("    <OEM>This is a redistributable license</OEM>\r\n");
+//		sbLicense.append("    <Products>\r\n");
+//		sbLicense.append("      <Product>Aspose.Total for Java</Product>\r\n");
+//		sbLicense.append("    </Products>\r\n");
+//		sbLicense.append("    <EditionType>Enterprise</EditionType>\r\n");
+//		sbLicense.append("    <SerialNumber>cdd715c6-ce3b-442a-bac9-a7ee85c471c3</SerialNumber>\r\n");
+//		sbLicense.append("    <SubscriptionExpiry>20201015</SubscriptionExpiry>\r\n");
+//		sbLicense.append("    <LicenseVersion>3.0</LicenseVersion>\r\n");
+//		sbLicense.append("    <LicenseInstructions>https://purchase.aspose.com/policies/use-license</LicenseInstructions>\r\n");
+//		sbLicense.append("  </Data>\r\n");
+//		sbLicense.append(" \r\n");
+//		sbLicense.append("<Signature>bPoEFCdXTWM4HgjFmZ5xPqQgW7JLoLRda4vLgJMyshfqz6h7jwEoUGPzpT5NFdOhxncxc4Oq4jK4OkvMyTxHBBVwIUBFSoqb1lw9FIFa7reU+sK21AlHgg3zb3lrbfG2YvrOGvmEZVEqFPpWhlH8QrJkrOWYnn8UHsfb11eaCYs=</Signature>\r\n");
+//		sbLicense.append("</License>\r\n");
+		sbLicense.append(rp.getProp("License"));
 		return sbLicense.toString();
 	}
 	

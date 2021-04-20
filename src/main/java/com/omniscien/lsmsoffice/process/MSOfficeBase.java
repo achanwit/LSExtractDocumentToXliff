@@ -1,4 +1,4 @@
-package extractDocument;
+package com.omniscien.lsmsoffice.process;
 
 import java.io.IOException;
 

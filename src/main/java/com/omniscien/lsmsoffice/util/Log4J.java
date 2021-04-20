@@ -1,4 +1,4 @@
-package util;
+package com.omniscien.lsmsoffice.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,13 +10,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.UUID;
-import model.ServletContextMock;
 
 import javax.servlet.ServletContext;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
+
+import com.omniscien.lsmsoffice.model.ServletContextMock;
 
 public class Log4J {
 	public String _sServiceName = "LSRestAPI";
@@ -30,6 +31,7 @@ public class Log4J {
 	public String sServerIP = "";
 	String loggerDebug = "log-debug";
 	private DateFormat dateSQL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private ReadProp rp = new ReadProp();
 	
 	public Log4J(ServletContextMock app) throws Exception {
 		try {
@@ -44,9 +46,11 @@ public class Log4J {
 				log4JPropertyFile = sLog4JPropertyFile;
 			*/
 			if (log4JPropertyFile == null || log4JPropertyFile.trim().length() == 0)
-				log4JPropertyFile = "/var/www/lse/log4j.xml";
+//				log4JPropertyFile = "/var/www/lse/log4j.xml";
+				log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_4J);
 			else if (log4JPropertyFile.trim().length() > 0 && !FileExists(log4JPropertyFile))
-				log4JPropertyFile = "/var/www/lse/log4j.xml";
+//				log4JPropertyFile = "/var/www/lse/log4j.xml";
+				log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_4J);
 
 			_app = app;
 			
@@ -56,12 +60,14 @@ public class Log4J {
 			
 			//debugPath = sDebugPath;
 			if (debugPath == null || debugPath.trim().length() == 0) {
-				debugPath = "/var/www/logs/lse-logs/msoffice/";
+//				debugPath = "/var/www/logs/lse-logs/msoffice/";
+				debugPath = com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_PATH;
 				logPath = combine(debugPath, "logs/");
 			}
 			
 			if (logPath == null || logPath.trim().length() == 0)
-				logPath = "/var/www/logs/lse-logs/msoffice/logs/";
+//				logPath = "/var/www/logs/lse-logs/msoffice/logs/";
+				logPath = com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_PATH+"logs/";
 			
 			File dir = new File(debugPath);
 			if (!dir.exists()) {

@@ -1,4 +1,4 @@
-package util;
+package com.omniscien.lsmsoffice.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,7 +27,7 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 
 import com.asiaonline.info.Server;
-import model.ServletContextMock;
+import com.omniscien.lsmsoffice.model.ServletContextMock;
 
 public class DB {
 	public String driver = "";
@@ -38,7 +38,9 @@ public class DB {
 	public String _sPropertyPath = "";
 	private Connection oConn = null;
 	private String pathDBProperties = "";
-	private String errormessage = "An unexpected database issue occurred. Please contact your system administrator.";
+	private ReadProp rp = new ReadProp();
+//	private String errormessage = "An unexpected database issue occurred. Please contact your system administrator.";
+	private String errormessage = rp.getProp("errormessage");
 
 
 	public DB() {
@@ -55,9 +57,11 @@ try {
 	
 	if (sDBErrorPath.equals("")) {
 		if (Server.isWindows())
-			sDBErrorPath = "C:\\temp\\lse-logs\\database";
+//			sDBErrorPath = "C:\\temp\\lse-logs\\database";
+			sDBErrorPath = rp.getProp("sDBErrorPathWindows");
 		else
-			sDBErrorPath = "/var/www/logs/lse-logs/database";
+//			sDBErrorPath = "/var/www/logs/lse-logs/database";
+			sDBErrorPath = rp.getProp("sDBErrorPathLinux");
 	}
 	File dir = new File(sDBErrorPath);
 	if (!dir.exists()) {
@@ -213,7 +217,7 @@ if (pathDBProperties == null || pathDBProperties.equals("")) {
 	if (Server.isWindows())
 		filePath = _sPropertyPath + "\\db.properties";
 	else
-		filePath = "/var/www/lse/db.properties";
+		filePath = rp.getProp("filePathDbProperties");
 } else
 	filePath = pathDBProperties;
 File file = new File(filePath);
@@ -265,7 +269,8 @@ try {
 		if (Server.isWindows())
 			path = _sPropertyPath + "\\db.properties";
 		else
-			path = "/var/www/lse/db.properties";
+//			path = "/var/www/lse/db.properties";
+			path = rp.getProp("filePathDbProperties");
 	} else
 		path = pathDBProperties;
 
@@ -287,7 +292,7 @@ try {
 		if (Server.isWindows())
 			path = _sPropertyPath + "\\db.properties";
 		else
-			path = "/var/www/lse/db.properties";
+			path = rp.getProp("filePathDbProperties");
 	} else
 		path = pathDBProperties;
 

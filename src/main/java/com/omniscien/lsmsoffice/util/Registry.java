@@ -1,4 +1,4 @@
-package util;
+package com.omniscien.lsmsoffice.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 
-import model.ServletContextMock;
-import util.DB;
+import com.omniscien.lsmsoffice.model.ServletContextMock;
+import com.omniscien.lsmsoffice.util.DB;
 
 public class Registry {
 	

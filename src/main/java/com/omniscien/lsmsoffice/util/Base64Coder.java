@@ -12,7 +12,7 @@
 // Please contact the author if you need another license.
 // This module is provided "as is", without warranties of any kind.
 
-package util;
+package com.omniscien.lsmsoffice.util;
 
 /**
 * Base64Coder.java - Contains Base64 encoder/decoder.

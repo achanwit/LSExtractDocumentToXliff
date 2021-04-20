@@ -1,4 +1,4 @@
-package model;
+package com.omniscien.lsmsoffice.model;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;

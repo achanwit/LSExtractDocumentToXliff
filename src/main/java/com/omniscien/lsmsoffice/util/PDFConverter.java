@@ -1,4 +1,4 @@
-package util;
+package com.omniscien.lsmsoffice.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
