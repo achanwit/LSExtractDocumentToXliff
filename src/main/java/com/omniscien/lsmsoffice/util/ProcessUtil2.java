@@ -2883,14 +2883,8 @@ private String loadAsposeLicense() {
 			
 			try {
 				
-//				String inputFileName = getFileNameFromFullPath(inputFilePath);
-				
 				File workingFile = null;
 				
-				
-				
-				
-//				String workingPath =  oLog.debugPath + "/temp/" + service + File.separator + jobID + File.separator + inputFileName;
 				String workingPath =  inputFilePath;
 				
 				workingFile = new File(workingPath);
@@ -2900,36 +2894,18 @@ private String loadAsposeLicense() {
 				String ext = FilenameUtils.getExtension(workingFile.getPath()).toLowerCase();
 				
 				//get working xliff path
-//				String xliffPath = root + File.separator + "pack1"+File.separator+"work"+File.separator + inputFilePath +".xlf"; 
-//				String xliffPath = xliffInputPath;
-
 				String xliffPath = xliffInputPath;
 				
-				if (new File(xliffPath).exists())
-				{
-//					String originalPath = xliffPath+".extract";
+				if (new File(xliffPath).exists()){
 					String originalPath = xliffPath;
 					File oriFile = new File(originalPath);
-					if (oriFile.exists()) {
-//						oriFile.delete();
-					}
-//					FileUtils.moveFile(new File(xliffPath),new File(originalPath));	
 				}
 				
 				//get output msoffice path
-//				String outputPath =  root + File.separator+"pack1"+File.separator+"done"+File.separator + Util.getFilename(workingPath, false) + ".out" + Util.getExtension(workingPath);
 				String outputPath = sOutputPath;
 				
 				if (xliffInputPath.length() > 0) {
 					File xliffInputFile = new File(xliffInputPath);
-//					if (xliffInputFile.exists()){		
-//						FileUtils.copyFile(xliffInputFile,new File(xliffPath));
-//					}
-//					else{
-//						String message = "xliff input file doesn't exist";
-//						oLog.WriteLog(pageName, "merge", message+ ", "+xliffInputPath, jobID, true);
-//						throw new Exception(message);
-//					}
 				}else {
 					if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext)) {
 						FileUtils.writeStringToFile(new File(xliffPath), xliffInputConntent.replace("LSPIPELS","|"),"UTF-8");
@@ -2950,10 +2926,8 @@ private String loadAsposeLicense() {
 					}
 					
 					output = mergeFromXliffAspose( jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath);
-//					sOutputPath.set(outputPath);
 					sOutputPath = outputPath;
 				}else if (extCellList.contains(ext)){
-//					output = mergeFromXliffAkapi(jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath,ext);
 					//20200402: Ramoslee: Change to use Aspose.
 					output = mergeFromXliffAsposeExcell(jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath);
 					sOutputPath = outputPath;
