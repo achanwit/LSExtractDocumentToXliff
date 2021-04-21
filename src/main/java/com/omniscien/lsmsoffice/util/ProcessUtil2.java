@@ -1428,8 +1428,8 @@ private String loadAsposeLicense() {
 
 			//read output xliff file
 			
-			if (!validateXML(output))
-				oLog.WriteLog(pageName, "extract", "INVALID XML output=" + xliffPath, jobID, false);
+//			if (!validateXML(output))
+//				oLog.WriteLog(pageName, "extract", "INVALID XML output=" + xliffPath, jobID, false);
 			
 			oLog.WriteLog(pageName, "extract", "end extract output=" + xliffPath, jobID, false);
 			
@@ -1478,8 +1478,8 @@ private String loadAsposeLicense() {
 			}
 			//read output xliff file
 			
-			if (!validateXML(output))
-				oLog.WriteLog(pageName, "extract", "INVALID XML output=" + xliffPath, jobID, false);
+//			if (!validateXML(output))
+//				oLog.WriteLog(pageName, "extract", "INVALID XML output=" + xliffPath, jobID, false);
 			
 			oLog.WriteLog(pageName, "extract", "end extract output=" + xliffPath, jobID, false);
 			
@@ -1761,8 +1761,8 @@ private String loadAsposeLicense() {
 			
 			//read output xliff file
 			
-			if (!validateXML(output))
-				oLog.WriteLog(pageName, "extract", "INVALID XML output=" + xliffPath, jobID, false);
+//			if (!validateXML(output))
+//				oLog.WriteLog(pageName, "extract", "INVALID XML output=" + xliffPath, jobID, false);
 			
 			oLog.WriteLog(pageName, "extract", "end extract output=" + xliffPath, jobID, false);
 			
@@ -2485,8 +2485,8 @@ private String loadAsposeLicense() {
 				}
 				
 				output = FileUtils.readFileToString(new File(xliffPath));
-				if (!validateXML(output))
-					oLog.WriteLog(pageName, "extractToXliffAsposeExcell", "INVALID XML output=" + xliffPath, jobID, false);
+//				if (!validateXML(output))
+//					oLog.WriteLog(pageName, "extractToXliffAsposeExcell", "INVALID XML output=" + xliffPath, jobID, false);
 				
 				oLog.WriteLog(pageName, "extractToXliffAsposeExcell", "end extract output=" + xliffPath, jobID, false);
 				
@@ -2595,8 +2595,8 @@ private String loadAsposeLicense() {
 				}
 				
 				output = FileUtils.readFileToString(new File(xliffPath));
-				if (!validateXML(output))
-					oLog.WriteLog(pageName, "extractToXliffAsposeExcell", "INVALID XML output=" + xliffPath, jobID, false);
+//				if (!validateXML(output))
+//					oLog.WriteLog(pageName, "extractToXliffAsposeExcell", "INVALID XML output=" + xliffPath, jobID, false);
 				
 				oLog.WriteLog(pageName, "extractToXliffAsposeExcell", "end extract output=" + xliffPath, jobID, false);
 				
@@ -2735,8 +2735,8 @@ private String loadAsposeLicense() {
 				}
 				//read output xliff file
 				output = FileUtils.readFileToString(new File(xliffPath));
-				if (!validateXML(output))
-					oLog.WriteLog(pageName, "extractToXliffAsposeSlide", "INVALID XML output=" + xliffPath, jobID, false);
+//				if (!validateXML(output))
+//					oLog.WriteLog(pageName, "extractToXliffAsposeSlide", "INVALID XML output=" + xliffPath, jobID, false);
 				
 				oLog.WriteLog(pageName, "extractToXliffAsposeSlide", "end extract output=" + xliffPath, jobID, false);
 				
@@ -2849,8 +2849,8 @@ private String loadAsposeLicense() {
 				
 				//read output xliff file
 				output = FileUtils.readFileToString(new File(xliffPath));
-				if (!validateXML(output))
-					oLog.WriteLog(pageName, "extractToXliffAsposeSlide", "INVALID XML output=" + xliffPath, jobID, false);
+//				if (!validateXML(output))
+//					oLog.WriteLog(pageName, "extractToXliffAsposeSlide", "INVALID XML output=" + xliffPath, jobID, false);
 				
 				oLog.WriteLog(pageName, "extractToXliffAsposeSlide", "end extract output=" + xliffPath, jobID, false);
 				
