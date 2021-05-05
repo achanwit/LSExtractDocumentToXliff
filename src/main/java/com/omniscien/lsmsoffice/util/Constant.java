@@ -1,8 +1,8 @@
 package com.omniscien.lsmsoffice.util;
 
-public class ConstantOfExtractDoc {
+public class Constant {
 
-	public ConstantOfExtractDoc() {
+	public Constant() {
 		
 	
 	}
@@ -37,4 +37,10 @@ public class ConstantOfExtractDoc {
 	public static final String IsSharedCPUCoresMode = "IsSharedCPUCoresMode";
 
 	public static final String TimeToRemoveJobMinutes = "TimeToRemoveJobMinutes";
+	
+	public static final String debugMode = "debugMode";
+	
+	public static final String debugPath = "debugPath";
+	
+	public static final String log4JPath = "log4JPath";
 }

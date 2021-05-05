@@ -29,6 +29,7 @@ public class TestMergeDoc {
 //		String targetlanguage,
 //		String sOutputPath
 		Merge merge = new Merge();
+		merge.propertiesSetting("/home/chanwit/Documents/LSTokenize/D.Test/TestPropertieseSetting/ExtractDocConfig.properties");
 		
 		String mergeResult = merge.Mergr(jobId, inputfilename, xliffpath, sourcelanguage, targetlanguage, sOutputPath);
 		

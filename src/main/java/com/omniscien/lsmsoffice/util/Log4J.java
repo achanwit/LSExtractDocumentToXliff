@@ -31,9 +31,15 @@ public class Log4J {
 	public String sServerIP = "";
 	String loggerDebug = "log-debug";
 	private DateFormat dateSQL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private ReadProp rp = new ReadProp();
 	
-	public Log4J(ServletContextMock app) throws Exception {
+
+	public Log4J(ServletContextMock app, ReadProp rp) {
+		
+	}
+	
+
+
+	public void Log4J(ServletContextMock app, ReadProp rp) throws Exception {
 		try {
 
 			//String sDebugPath = app.getInitParameter("logpath");
@@ -47,10 +53,10 @@ public class Log4J {
 			*/
 			if (log4JPropertyFile == null || log4JPropertyFile.trim().length() == 0)
 //				log4JPropertyFile = "/var/www/lse/log4j.xml";
-				log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_4J);
+				log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.Constant.LOG_4J);
 			else if (log4JPropertyFile.trim().length() > 0 && !FileExists(log4JPropertyFile))
 //				log4JPropertyFile = "/var/www/lse/log4j.xml";
-				log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_4J);
+				log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.Constant.LOG_4J);
 
 			_app = app;
 			
@@ -61,13 +67,13 @@ public class Log4J {
 			//debugPath = sDebugPath;
 			if (debugPath == null || debugPath.trim().length() == 0) {
 //				debugPath = "/var/www/logs/lse-logs/msoffice/";
-				debugPath = com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_PATH;
+				debugPath = com.omniscien.lsmsoffice.util.Constant.LOG_PATH;
 				logPath = combine(debugPath, "logs/");
 			}
 			
 			if (logPath == null || logPath.trim().length() == 0)
 //				logPath = "/var/www/logs/lse-logs/msoffice/logs/";
-				logPath = com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_PATH+"logs/";
+				logPath = com.omniscien.lsmsoffice.util.Constant.LOG_PATH+"logs/";
 			
 			File dir = new File(debugPath);
 			if (!dir.exists()) {
@@ -82,6 +88,12 @@ public class Log4J {
 		}
 	}
 	
+
+
+
+
+
+
 	public void setDebugPath(String path) {
 		debugPath = path;
 		logPath =  combine(debugPath, "logs/");

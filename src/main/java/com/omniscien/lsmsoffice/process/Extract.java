@@ -19,10 +19,61 @@ public class Extract{
 	private static com.omniscien.lsmsoffice.util.Log4J oLog = null;
 	private static Common oCommon = null;
 	private static String sPageName = "extract.java";
-	private ReadProp rp = new ReadProp();
+	private ReadProp rp = null;
 	//private static MSOffice instance = new MSOffice();
 
 	public Extract() {
+		
+	}
+	
+	public void propertiesSetting(String filePath) {
+		rp = new ReadProp(filePath);
+		
+		
+}
+	public boolean ExtractImageFromPDF(String inputODFFilePath, String outputPath, String prefixOfImageFile) {
+		boolean extarctStatus = false;
+		ServletContextMock app = new ServletContextMock();
+		ProcessUtil2 oProcess = new ProcessUtil2();
+		if (oLog == null) {
+			oLog = new Log4J(app, rp);
+//			oLog.debugMode = getDebugMode();
+			oLog.debugMode = true;
+//			oLog.setDebugPath(getDebugPath());
+			oLog.setDebugPath(rp.getProp(com.omniscien.lsmsoffice.util.Constant.LOG_PATH));
+//			oLog.log4JPropertyFile = getLog4JPath();
+			oLog.log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.Constant.LOG_4J);
+		}
+		if (oCommon == null) {
+			oCommon = new Common();
+		}
+		try {
+			oProcess = new ProcessUtil2(
+
+					 rp.getProp(com.omniscien.lsmsoffice.util.Constant.ResourcesPath),
+//				util.ConstantOfExtractDoc.ResourcesPath,
+					 rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYExtension),
+//				util.ConstantOfExtractDoc.ABBYYExtension,
+					app,
+					oLog,
+					rp.getProp(com.omniscien.lsmsoffice.util.Constant.FontConfigPath),
+//				util.ConstantOfExtractDoc.FontConfigPath,
+					rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYPath),
+//				util.ConstantOfExtractDoc.ABBYYPath,
+					rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYGetInfoFileName),
+//				util.ConstantOfExtractDoc.ABBYYGetInfoFileName,
+					rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYWaitInterval),
+//				util.ConstantOfExtractDoc.ABBYYWaitInterval,
+					false,
+					60,
+					rp);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		extarctStatus = oProcess.extractOnlyImageFromPDF(inputODFFilePath, outputPath, prefixOfImageFile);
+		return extarctStatus;
+			
 		
 	}
 	
@@ -46,34 +97,34 @@ public class Extract{
 		return sOutput;
 	}
 	
-	public String ExtarctXliffToFile(String jobid, String inputpath, String outputpath, String  sourcelanguage, String  targetlanguage) {
+	public void ExtarctXliffToFile(String jobid, String inputpath, String outputpath, String  sourcelanguage, String  targetlanguage) {
 		String sOutput = "";
 		String format = "xliff";
 		
-		sOutput = ExtarctXliffToFile(jobid, inputpath, outputpath, sourcelanguage, targetlanguage, format);
+		ExtarctXliffToFile(jobid, inputpath, outputpath, sourcelanguage, targetlanguage, format);
 		
-		return sOutput;
+	
 	}
 	
-	public String ExtractFileToParagraphText(String jobid, String inputpath, String outputpath) {
+	public void ExtractFileToParagraphText(String jobid, String inputpath, String outputpath) {
 		String sOutput = "";
 		String format = "txt";
 		String sourcelanguage = "";
 		String targetlanguage = "";
 		
-		sOutput = Extract(jobid, inputpath, outputpath, sourcelanguage, targetlanguage, format);
+		Extract(jobid, inputpath, outputpath, sourcelanguage, targetlanguage, format);
 		
-		return sOutput;
+		
 	}
 	
 	
 	
-	public String ExtarctXliffToFile(String jobid, String inputpath, String outputpath, String  sourcelanguage, String  targetlanguage, String format) {
+	public void ExtarctXliffToFile(String jobid, String inputpath, String outputpath, String  sourcelanguage, String  targetlanguage, String format) {
 		String sOutput = "";
 		
 		sOutput = Extract(jobid, inputpath, outputpath, sourcelanguage, targetlanguage, format);
 		
-		return sOutput;
+		
 	}
 	
 	
@@ -170,13 +221,13 @@ public class Extract{
 		String sOutput = "";
 		
 		if (oLog == null) {
-			oLog = new Log4J(app);
+			oLog = new Log4J(app, rp);
 //			oLog.debugMode = getDebugMode();
 			oLog.debugMode = true;
 //			oLog.setDebugPath(getDebugPath());
-			oLog.setDebugPath(rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_PATH));
+			oLog.setDebugPath(rp.getProp(com.omniscien.lsmsoffice.util.Constant.LOG_PATH));
 //			oLog.log4JPropertyFile = getLog4JPath();
-			oLog.log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.LOG_4J);
+			oLog.log4JPropertyFile = rp.getProp(com.omniscien.lsmsoffice.util.Constant.LOG_4J);
 		}
 		if (oCommon == null) {
 			oCommon = new Common();
@@ -200,22 +251,23 @@ public class Extract{
 		
 		 oProcess = new ProcessUtil2(
 
-				 rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.ResourcesPath),
+				 rp.getProp(com.omniscien.lsmsoffice.util.Constant.ResourcesPath),
 //				util.ConstantOfExtractDoc.ResourcesPath,
-				 rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.ABBYYExtension),
+				 rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYExtension),
 //				util.ConstantOfExtractDoc.ABBYYExtension,
 				app,
 				oLog,
-				rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.FontConfigPath),
+				rp.getProp(com.omniscien.lsmsoffice.util.Constant.FontConfigPath),
 //				util.ConstantOfExtractDoc.FontConfigPath,
-				rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.ABBYYPath),
+				rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYPath),
 //				util.ConstantOfExtractDoc.ABBYYPath,
-				rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.ABBYYGetInfoFileName),
+				rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYGetInfoFileName),
 //				util.ConstantOfExtractDoc.ABBYYGetInfoFileName,
-				rp.getProp(com.omniscien.lsmsoffice.util.ConstantOfExtractDoc.ABBYYWaitInterval),
+				rp.getProp(com.omniscien.lsmsoffice.util.Constant.ABBYYWaitInterval),
 //				util.ConstantOfExtractDoc.ABBYYWaitInterval,
 				false,
-				60
+				60,
+				rp
 
 						);
 		sOutput = oProcess.extract(jobid, service, inputfilename,outputfilename, inputcontent, inputpath, outputpath, sourcelanguage, targetlanguage, format, bMerge, sDocxContent);

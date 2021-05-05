@@ -8,16 +8,21 @@ import java.util.Properties;
 
 public class ReadProp {
 	
+	private String propFilepath = "";
 	InputStream inputStream;
 
 	public ReadProp() {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public ReadProp(String propFilepath) {
+		this.propFilepath = propFilepath;
+	}
+	
 public String getProp(String key)  {
 		String result = "";
 		
-		String propFileName = "ExtractDocConfig.properties";
+		String propFileName = propFilepath;
 		try {
 		Properties prop = new Properties();
 

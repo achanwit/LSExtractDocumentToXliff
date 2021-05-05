@@ -12,12 +12,14 @@ public class A1_TestExtractDocToParagraphTxt {
 		
 		long Begin = System.currentTimeMillis();
 		Extract ms = new Extract();
+		ms.propertiesSetting("ExtractDocConfig.properties");
 		String jobId = "1";
-		String inputPath = "/home/chanwit/Documents/LSExtractDocument/A.PreStudy/input/07_txt/sample3.txt";
-		String outputPath = "/home/chanwit/Documents/LSExtractDocument/A.PreStudy/input/07_txt/out_sample3.txt";
+		String inputPath = "/home/chanwit/Documents/LSExtractDocument/A.PreStudy/input/10_msg/msg/sample.msg";
+		String outputPath = "/home/chanwit/Documents/LSExtractDocument/A.PreStudy/outputfileParagraph/10_msg/sample.msg.txt";
 
 		
-		String output = ms.ExtractFileToParagraphText(jobId, inputPath, outputPath);
+//		String output = ms.ExtractFileToParagraphText(jobId, inputPath, outputPath);
+		ms.ExtractFileToParagraphText(jobId, inputPath, outputPath);
 
 		
 //		String output = ms.ExtarctXliffToFile(jobId, inputPath, outputPath, sourcelanguage, targetlanguage);
@@ -25,7 +27,7 @@ public class A1_TestExtractDocToParagraphTxt {
 		long Total = End-Begin;
 		
 		System.out.println("Total Time Process: "+Total);
-		System.out.println("output: "+output);
+//		System.out.println("output: "+output);
 		System.exit(0);
 	}
 

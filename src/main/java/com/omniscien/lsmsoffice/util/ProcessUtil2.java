@@ -61,6 +61,12 @@ import com.aspose.cells.Workbook;
 import com.aspose.cells.Worksheet;
 import com.aspose.email.EmlLoadOptions;
 import com.aspose.email.MailMessage;
+import com.aspose.pdf.ImageType;
+import com.aspose.pdf.Page;
+import com.aspose.pdf.PageCollection;
+import com.aspose.pdf.XImageCollection;
+import com.aspose.pdf.facades.PdfConverter;
+import com.aspose.pdf.facades.PdfExtractor;
 import com.aspose.slides.IParagraph;
 import com.aspose.slides.IPortion;
 import com.aspose.slides.ITextFrame;
@@ -84,6 +90,7 @@ import net.sf.okapi.common.Util;
 
 public class ProcessUtil2 {
 	//
+	private ReadProp rp = null;
 	private String resourcepath;
 	String productid;
 	String abbyyextension;
@@ -159,7 +166,7 @@ public class ProcessUtil2 {
 	//
 	
 	private String sSpacialCharPattern = "([\\u0000\\u001E\\u000C\\u000E\\u001F\\u000B\\u0009])";
-	private ReadProp rp = new ReadProp();
+	
 	
 
 
@@ -179,8 +186,10 @@ public class ProcessUtil2 {
 			String _abbyyGetInfoFileName, 
 			String _abbyyWaitInterval, 
 			Boolean _isSharedCPUCoresMode, 
-			Integer timeToRemoveJobMinutes
+			Integer timeToRemoveJobMinutes, 
+			ReadProp rp
 			) throws Exception {
+		this.rp = rp;
 		this.propertieseService = new PropertieseService();
 		app = _app;
 		resourcepath = _resourcespath;
@@ -195,6 +204,7 @@ public class ProcessUtil2 {
 		abbyyextension = _abbyyextension;
 		fontConfigPath = _fontConfigPath;
 		activateAsposeLicense();
+		
 //		checkStartThreadMonitorJobProcess();
 		
 	}
@@ -3528,6 +3538,40 @@ private String loadAsposeLicense() {
 				}
 			}
 			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
+			
+		}
+		
+		public void extractImageFromPDFAllPage(String inputODFFilePath,String outputFilePath,String prefixOfImageFile) {
+			PdfConverter objConverter = new PdfConverter();
+			objConverter.bindPdf(inputODFFilePath);
+			
+			// initialize the converting process
+			objConverter.doConvert();
+			int i = 1;
+			
+			while (objConverter.hasNextImage()) {
+//				objConverter.getNextImage(i + ".jpg", ImageType.getJpeg());
+				objConverter.getNextImage(outputFilePath+"/"+prefixOfImageFile+i+".jpg", ImageType.getJpeg());
+				i++;
+			}
+			objConverter.close();
+			
+		}
+		
+		public boolean extractOnlyImageFromPDF(String inputODFFilePath,String outputFilePath,String prefixOfImageFile) {
+			boolean extractStatus = false;
+			PdfExtractor pdfExtractor = new PdfExtractor();
+			pdfExtractor.bindPdf(inputODFFilePath);
+			
+			// Extract all the images
+			int i = 1;
+			pdfExtractor.extractImage();
+			while (pdfExtractor.hasNextImage()) {				
+				extractStatus = pdfExtractor.getNextImage(outputFilePath+"/"+prefixOfImageFile+i+".jpg", ImageType.getJpeg());
+				i++;
+			}
+			
+			return extractStatus;
 			
 		}
 }
