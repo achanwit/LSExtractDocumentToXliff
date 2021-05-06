@@ -77,6 +77,7 @@ import com.aspose.words.ControlChar;
 import com.aspose.words.ListFormat;
 import com.aspose.words.NumberStyle;
 import com.aspose.words.Run;
+import com.aspose.words.StyleCollection;
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.google.gson.Gson;
 import com.ibm.icu.text.CharsetDetector;
@@ -1447,6 +1448,9 @@ private String loadAsposeLicense() {
 				
 				output = FileUtils.readFileToString(new File(xliffPath));
 			}else {
+				if(new File(outputPath).exists()) {
+					deleteFile(outputPath);
+				}
 				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 			}
@@ -1459,6 +1463,11 @@ private String loadAsposeLicense() {
 		return output;
 	}
 	
+	private void deleteFile(String filePath) {
+		File file = new File(filePath); 
+		file.delete();	
+	}
+
 	private String extractToXliffAsposeEmail(File workingFile,String inputFileName,String ext,
 			String sLangSource , String sLangTarget,
 			String jobID, String outputPath) throws Exception {
@@ -1501,6 +1510,9 @@ private String loadAsposeLicense() {
 				output = FileUtils.readFileToString(new File(xliffPath));
 				
 			}else {
+				if(new File(outputPath).exists()) {
+					deleteFile(outputPath);
+				}
 				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 			}
@@ -1640,6 +1652,9 @@ private String loadAsposeLicense() {
 				output = FileUtils.readFileToString(new File(xliffPath));
 				
 			}else {
+				if(new File(outputPath).exists()) {
+					deleteFile(outputPath);
+				}
 				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 				output = "Extract file as paragraph finished, position at: \""+outputPath+ "\" .";
 			}
@@ -1784,6 +1799,9 @@ private String loadAsposeLicense() {
 				output = FileUtils.readFileToString(new File(xliffPath));
 				
 			}else {
+				if(new File(outputPath).exists()) {
+					deleteFile(outputPath);
+				}
 				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 			}
@@ -2504,6 +2522,9 @@ private String loadAsposeLicense() {
 					
 					output = FileUtils.readFileToString(new File(xliffPath));
 				}else {
+					if(new File(outputPath).exists()) {
+						deleteFile(outputPath);
+					}
 					Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 					output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 				}
@@ -2614,6 +2635,9 @@ private String loadAsposeLicense() {
 					
 					output = FileUtils.readFileToString(new File(xliffPath));
 				}else {
+					if(new File(outputPath).exists()) {
+						deleteFile(outputPath);
+					}
 					Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 					output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 				}
@@ -2754,6 +2778,9 @@ private String loadAsposeLicense() {
 					output = FileUtils.readFileToString(new File(xliffPath));
 					
 				}else {
+					if(new File(outputPath).exists()) {
+						deleteFile(outputPath);
+					}
 					Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 					output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 				}
@@ -2868,6 +2895,9 @@ private String loadAsposeLicense() {
 					output = FileUtils.readFileToString(new File(xliffPath));
 					
 				}else {
+					if(new File(outputPath).exists()) {
+						deleteFile(outputPath);
+					}
 					Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
 					output = "Generate Xliff file: \""+outputPath+ "\" finished.";
 				}
