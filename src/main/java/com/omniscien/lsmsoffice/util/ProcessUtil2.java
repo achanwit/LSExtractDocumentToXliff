@@ -1448,6 +1448,7 @@ private String loadAsposeLicense() {
 				
 				output = FileUtils.readFileToString(new File(xliffPath));
 			}else {
+				//Check Existing output file
 				if(new File(outputPath).exists()) {
 					deleteFile(outputPath);
 				}
@@ -1510,6 +1511,7 @@ private String loadAsposeLicense() {
 				output = FileUtils.readFileToString(new File(xliffPath));
 				
 			}else {
+				//Check Existing output file
 				if(new File(outputPath).exists()) {
 					deleteFile(outputPath);
 				}
@@ -1652,6 +1654,7 @@ private String loadAsposeLicense() {
 				output = FileUtils.readFileToString(new File(xliffPath));
 				
 			}else {
+				//Check Existing output file
 				if(new File(outputPath).exists()) {
 					deleteFile(outputPath);
 				}
@@ -1799,6 +1802,7 @@ private String loadAsposeLicense() {
 				output = FileUtils.readFileToString(new File(xliffPath));
 				
 			}else {
+				//Check Existing output file
 				if(new File(outputPath).exists()) {
 					deleteFile(outputPath);
 				}
@@ -2522,6 +2526,7 @@ private String loadAsposeLicense() {
 					
 					output = FileUtils.readFileToString(new File(xliffPath));
 				}else {
+					//Check Existing output file
 					if(new File(outputPath).exists()) {
 						deleteFile(outputPath);
 					}
@@ -2635,6 +2640,7 @@ private String loadAsposeLicense() {
 					
 					output = FileUtils.readFileToString(new File(xliffPath));
 				}else {
+					//Check Existing output file
 					if(new File(outputPath).exists()) {
 						deleteFile(outputPath);
 					}
@@ -2778,6 +2784,7 @@ private String loadAsposeLicense() {
 					output = FileUtils.readFileToString(new File(xliffPath));
 					
 				}else {
+					//Check Existing output file
 					if(new File(outputPath).exists()) {
 						deleteFile(outputPath);
 					}
@@ -2895,6 +2902,7 @@ private String loadAsposeLicense() {
 					output = FileUtils.readFileToString(new File(xliffPath));
 					
 				}else {
+					//Check Existing output file
 					if(new File(outputPath).exists()) {
 						deleteFile(outputPath);
 					}
