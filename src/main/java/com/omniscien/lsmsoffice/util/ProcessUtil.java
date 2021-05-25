@@ -60,7 +60,7 @@ import com.aspose.slides.IPortion;
 import com.aspose.slides.ITextFrame;
 import com.aspose.slides.Presentation;
 import com.aspose.slides.SlideUtil;
-import com.aspose.slides.internal.mw.avi;
+//import com.aspose.slides.internal.mw.avi;
 import com.aspose.words.ControlChar;
 import com.aspose.words.ListFormat;
 import com.aspose.words.NumberStyle;

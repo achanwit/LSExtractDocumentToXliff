@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.Base64.Decoder;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,6 +66,9 @@ import com.aspose.email.MailMessage;
 import com.aspose.pdf.ImageType;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.PageCollection;
+import com.aspose.pdf.SaveOptions;
+import com.aspose.pdf.TextAbsorber;
+import com.aspose.pdf.TextExtractionOptions;
 import com.aspose.pdf.XImageCollection;
 import com.aspose.pdf.facades.PdfConverter;
 import com.aspose.pdf.facades.PdfExtractor;
@@ -72,7 +77,7 @@ import com.aspose.slides.IPortion;
 import com.aspose.slides.ITextFrame;
 import com.aspose.slides.Presentation;
 import com.aspose.slides.SlideUtil;
-import com.aspose.slides.internal.mw.avi;
+//import com.aspose.slides.internal.mw.avi;
 import com.aspose.words.ControlChar;
 import com.aspose.words.ListFormat;
 import com.aspose.words.NumberStyle;
@@ -167,6 +172,8 @@ public class ProcessUtil2 {
 	//
 	
 	private String sSpacialCharPattern = "([\\u0000\\u001E\\u000C\\u000E\\u001F\\u000B\\u0009])";
+	
+	private int spcID;
 	
 	
 
@@ -271,6 +278,7 @@ public class ProcessUtil2 {
 			
 		} catch (Exception e) {
 			oLog.WriteLog(pageName, "getProductid", oLog.getStackTrace(e), "", true);
+			throw e;
 		}
 		return sProductid;
 	}
@@ -297,6 +305,7 @@ public class ProcessUtil2 {
 			
 		} catch (Exception e) {
 			oLog.WriteLog(pageName, "getABBYYLicense", oLog.getStackTrace(e), "", true);
+			throw e;
 		}
 		return sLicienseNo;
 	}
@@ -358,12 +367,14 @@ public class ProcessUtil2 {
 					oLog.WriteLog(pageName, "getCPUCores", oLog.getStackTrace(ex), jobId, true);
 					//set default
 					cpuCores = 1;
+					throw ex;
 				}
 			}
 			oLog.WriteLog(pageName, "getCPUCores", "cpuCores=" + cpuCores, jobId, false);
 			
 		} catch (Exception e) {
 			oLog.WriteLog(pageName, "getCPUCores", oLog.getStackTrace(e), jobId, true);
+			throw e;
 		}
 		return cpuCores;
 	}
@@ -389,6 +400,7 @@ public class ProcessUtil2 {
 			
 		} catch (Exception e) {
 			oLog.WriteLog(pageName, "getABBYYTimeInterval", oLog.getStackTrace(e), "", true);
+			throw e;
 		}
 		return time;
 	}
@@ -409,8 +421,8 @@ public class ProcessUtil2 {
 			com.aspose.email.License licE = new com.aspose.email.License();
 			licE.setLicense(IOUtils.toInputStream(loadAsposeLicense()));
 	
-//			com.aspose.diagram.License licD = new com.aspose.diagram.License();
-//			licD.setLicense(IOUtils.toInputStream(loadAsposeLicense()));
+			com.aspose.diagram.License licD = new com.aspose.diagram.License();
+			licD.setLicense(IOUtils.toInputStream(loadAsposeLicense()));
 				
 			com.aspose.pdf.License licP = new com.aspose.pdf.License();
 			licP.setLicense(IOUtils.toInputStream(loadAsposeLicense()));
@@ -418,37 +430,59 @@ public class ProcessUtil2 {
 		} catch (Exception e) {
 			bSetAspose = false;
 			oLog.WriteLog(pageName, "setAsposeLicense", oLog.getStackTrace(e), "", true);
+			throw e;
 		}
 		return bSetAspose;
 	}
 	
 private String loadAsposeLicense() {
-		
-		StringBuilder sbLicense = new StringBuilder();
-//		sbLicense.append("<License>\r\n");
-//		sbLicense.append("  <Data>\r\n");
-//		sbLicense.append("    <LicensedTo>Asia Online Pte Ltd</LicensedTo>\r\n");
-//		sbLicense.append("    <EmailTo>greg.binger@omniscien.com</EmailTo>\r\n");
-//		sbLicense.append("    <LicenseType>Developer OEM</LicenseType>\r\n");
-//		sbLicense.append("    <LicenseNote>Limited to 1 developer, unlimited physical locations</LicenseNote>\r\n");
-//		sbLicense.append("    <OrderID>191014055551</OrderID>\r\n");
-//		sbLicense.append("    <UserID>135027412</UserID>\r\n");
-//		sbLicense.append("    <OEM>This is a redistributable license</OEM>\r\n");
-//		sbLicense.append("    <Products>\r\n");
-//		sbLicense.append("      <Product>Aspose.Total for Java</Product>\r\n");
-//		sbLicense.append("    </Products>\r\n");
-//		sbLicense.append("    <EditionType>Enterprise</EditionType>\r\n");
-//		sbLicense.append("    <SerialNumber>cdd715c6-ce3b-442a-bac9-a7ee85c471c3</SerialNumber>\r\n");
-//		sbLicense.append("    <SubscriptionExpiry>20201015</SubscriptionExpiry>\r\n");
-//		sbLicense.append("    <LicenseVersion>3.0</LicenseVersion>\r\n");
-//		sbLicense.append("    <LicenseInstructions>https://purchase.aspose.com/policies/use-license</LicenseInstructions>\r\n");
-//		sbLicense.append("  </Data>\r\n");
-//		sbLicense.append(" \r\n");
-//		sbLicense.append("<Signature>bPoEFCdXTWM4HgjFmZ5xPqQgW7JLoLRda4vLgJMyshfqz6h7jwEoUGPzpT5NFdOhxncxc4Oq4jK4OkvMyTxHBBVwIUBFSoqb1lw9FIFa7reU+sK21AlHgg3zb3lrbfG2YvrOGvmEZVEqFPpWhlH8QrJkrOWYnn8UHsfb11eaCYs=</Signature>\r\n");
-//		sbLicense.append("</License>\r\n");
-		sbLicense.append(rp.getProp("License"));
-		return sbLicense.toString();
+
+		String licenseContent = generateLicense();		
+		return licenseContent;
 	}
+
+	private String generateLicense() {
+		String rawLicenseData = rp.getProp("License");
+		//DecodeLicense
+		Decoder decoder = Base64.getUrlDecoder();
+		byte[] bytes = null;
+		String decodeStr = new String();
+		for(int i=7;i>=0;i--) {
+			if(i == 7) {
+				bytes = decoder.decode(rawLicenseData);
+			}else {
+				bytes = decoder.decode(new String(bytes));
+			}
+			
+			decodeStr = new String(bytes);
+		}
+		decodeStr = new String(bytes);
+		String[] licenseArr = decodeStr.split("_zxcvnm_");
+		StringBuilder sbLicense = new StringBuilder();
+		sbLicense.append("<License>\r\n");
+		sbLicense.append("  <Data>\r\n");
+		sbLicense.append("    <LicensedTo>"+licenseArr[0]+"</LicensedTo>\r\n");
+		sbLicense.append("    <EmailTo>"+licenseArr[1]+"</EmailTo>\r\n");
+		sbLicense.append("    <LicenseType>"+licenseArr[2]+"</LicenseType>\r\n");
+		sbLicense.append("    <LicenseNote>"+licenseArr[3]+"</LicenseNote>\r\n");
+		sbLicense.append("    <OrderID>"+licenseArr[4]+"</OrderID>\r\n");
+		sbLicense.append("    <UserID>"+licenseArr[5]+"</UserID>\r\n");
+		sbLicense.append("    <OEM>"+licenseArr[6]+"</OEM>\r\n");
+		sbLicense.append("    <Products>\r\n");
+		sbLicense.append("      <Product>"+licenseArr[7]+"</Product>\r\n");
+		sbLicense.append("    </Products>\r\n");
+		sbLicense.append("    <EditionType>"+licenseArr[8]+"</EditionType>\r\n");
+		sbLicense.append("    <SerialNumber>"+licenseArr[9]+"</SerialNumber>\r\n");
+		sbLicense.append("    <SubscriptionExpiry>"+licenseArr[10]+"</SubscriptionExpiry>\r\n");
+		sbLicense.append("    <LicenseVersion>"+licenseArr[11]+"</LicenseVersion>\r\n");
+		sbLicense.append("    <LicenseInstructions>"+licenseArr[12]+"</LicenseInstructions>\r\n");
+		sbLicense.append("  </Data>\r\n");
+		sbLicense.append(" \r\n");
+		sbLicense.append("<Signature>"+licenseArr[13]+"</Signature>\r\n");
+		sbLicense.append("</License>\r\n");
+		
+	return sbLicense.toString();
+}
 
 	private void checkStartThreadMonitorJobProcess() throws Exception {
 		// check start thread insert/update DB
@@ -594,19 +628,20 @@ private String loadAsposeLicense() {
 						File inputFile = new File(inputPath);
 						if (inputFile.exists())
 						{
-							workingPath = oLog.debugPath + "/temp/" + service + File.separator + jobID + File.separator + inputFileName;
+//							workingPath = oLog.debugPath + "/temp/" + service + File.separator + jobID + File.separator + inputFileName;
+							workingPath = inputPath;
 							workingFile = new File(workingPath);
-							if (!workingFile.getParentFile().exists()) workingFile.getParentFile().mkdirs();
-							if (bMerge && workingFile.exists())
-							{
-								File extractFile = new File(workingPath+".extract");
-								if (!extractFile.exists())
-								{
-									FileUtils.moveFile(workingFile, extractFile);
-									oLog.WriteLog(pageName, "extract", "backup input extract file", jobID, false);
-								}
-							}
-							FileUtils.copyFile(inputFile,workingFile);
+//							if (!workingFile.getParentFile().exists()) workingFile.getParentFile().mkdirs();
+//							if (bMerge && workingFile.exists())
+//							{
+//								File extractFile = new File(workingPath+".extract");
+//								if (!extractFile.exists())
+//								{
+//									FileUtils.moveFile(workingFile, extractFile);
+//									oLog.WriteLog(pageName, "extract", "backup input extract file", jobID, false);
+//								}
+//							}
+//							FileUtils.copyFile(inputFile,workingFile);
 						}
 						else
 						{
@@ -650,15 +685,21 @@ private String loadAsposeLicense() {
 					try {
 						//extract to html
 						if (format.equals("html")) {
-							
-							output = extractToHtml( workingFile, inputFileName,ext, jobID);
+							if(outputPath.equals("")) {
+								output = extractToHtml( workingFile, inputFileName,ext, jobID);
+							}else {
+								output = extractToHtml( workingFile, inputFileName,ext, jobID, outputPath);
+							}
 						
 						}
 						//extract to text
 						else if (format.equals("text")) 
 						{
-							
-							output = extractToText( workingFile, inputFileName,ext, jobID);
+							if(outputPath.equals("")) {
+								output = extractToText( workingFile, inputFileName,ext, jobID);
+							}else {
+								output = extractToText( workingFile, inputFileName,ext, jobID, outputPath);
+							}
 						}
 						else if (format.equals("xliff")) 
 						{
@@ -892,6 +933,11 @@ private String loadAsposeLicense() {
 				return output;
 			}
 	
+
+
+
+
+
 	private void convertTSVToCSVFile(String csvFilePath, String tsvFilePath) throws IOException {
 		 StringTokenizer tokenizer;
 		 try (BufferedReader br = new BufferedReader(new FileReader(tsvFilePath));
@@ -923,6 +969,70 @@ private String loadAsposeLicense() {
 			 
 		 }
 		
+	}
+	
+	private String extractToHtml(File workingFile, String inputFileName, String ext, String jobID, String outputPath) throws Exception{
+
+//		String root = workingFile.getParent();
+		String htmlPath = outputPath; 
+		File htmlFile = new File(htmlPath);
+		if (!htmlFile.getParentFile().exists()) htmlFile.getParentFile().mkdirs();
+		
+		if (extSlideList.contains(ext))
+		{
+			//extract slide to html
+			com.aspose.slides.Presentation presentation = new com.aspose.slides.Presentation(workingFile.getPath());
+			presentation.save(htmlPath,com.aspose.slides.SaveFormat.Html);
+		}
+		else if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext))
+		{
+			//extract word to html
+			com.aspose.words.Document doc = new com.aspose.words.Document(workingFile.getPath());
+			com.aspose.words.HtmlSaveOptions options= new com.aspose.words.HtmlSaveOptions();
+			options.setExportImagesAsBase64(true);
+			options.setMetafileFormat(0);
+			doc.save(htmlPath,options);
+			//doc.save(htmlPath,com.aspose.words.SaveFormat.HTML);
+		}
+		else if (extEmailList.contains(ext))
+		{
+			//extract email to html
+			com.aspose.email.MailMessage message = com.aspose.email.MailMessage.load(workingFile.getPath());
+			message.save(htmlPath,com.aspose.email.SaveOptions.getDefaultHtml());
+			
+		}
+		else if (extCellList.contains(ext))
+		{
+			//extract cell to html
+			com.aspose.cells.Workbook workbook = new com.aspose.cells.Workbook(workingFile.getPath());
+			com.aspose.cells.HtmlSaveOptions options= new com.aspose.cells.HtmlSaveOptions();
+			options.setExportImagesAsBase64(true);
+			workbook.save(htmlPath,options);
+			//workbook.save(htmlPath,com.aspose.cells.SaveFormat.HTML);
+		}
+		
+		try {
+			java.io.File fileIn = new java.io.File(htmlPath);
+			String sEncoding = GetEncoding(fileIn.toString());
+			
+			if ( !StandardCharsets.UTF_8.toString().equalsIgnoreCase(sEncoding) ) {
+				FileUtils.copyFile(fileIn, new File(htmlPath + "_temp.html"));
+				java.io.File source = new File(htmlPath + "_temp.html");
+				EncodingConvert(source.toString(), fileIn.toString(), sEncoding, StandardCharsets.UTF_8.toString());
+				source.deleteOnExit();
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+			oLog.WriteLog(pageName, "extractToHtml", "output=" + htmlPath + " Encoding :: error=" + e.getMessage(), jobID, false);
+			throw e;
+		}
+		
+		
+		
+		
+		oLog.WriteLog(pageName, "extract", "output=" + htmlPath, jobID, false);
+		
+		return FileUtils.readFileToString(new File(htmlPath), "UTF-8");
 	}
 
 	private String extractToHtml(File workingFile,String inputFileName,String ext,String jobID) //Aspose used
@@ -979,6 +1089,7 @@ private String loadAsposeLicense() {
 		}catch (Exception e) {
 			// TODO: handle exception
 			oLog.WriteLog(pageName, "extractToHtml", "output=" + htmlPath + " Encoding :: error=" + e.getMessage(), jobID, false);
+			throw e;
 		}
 		
 		
@@ -1122,7 +1233,7 @@ private String loadAsposeLicense() {
 				newStr = text;
 			}
 		} catch (Exception e) {
-			
+			throw e;
 		}
 		return newStr;
 	}
@@ -1136,6 +1247,132 @@ private String loadAsposeLicense() {
 	    	return "\r\n";
 	    else
 	    	return "\n";
+	}
+	
+	private String extractToText(File workingFile, String inputFileName, String ext, String jobID, String outputPath) throws Exception {
+
+		
+//		String root = workingFile.getParent();
+		String txtPath = outputPath; 
+		File txtFile = new File(txtPath);
+		if (!txtFile.getParentFile().exists()) txtFile.getParentFile().mkdirs();
+		
+		if (extSlideList.contains(ext))
+		{
+			//extract slide to text
+			com.aspose.slides.Presentation pres;
+			com.aspose.slides.ISlideCollection slides;
+
+			try ( Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(txtPath, false), StandardCharsets.UTF_8 )) ) {
+				pres = new com.aspose.slides.Presentation(workingFile.getPath());
+				slides = pres.getSlides();
+
+			    for (int i = 0; i < slides.size(); i++) {
+			    	com.aspose.slides.ISlide slide = slides.get_Item(i);
+
+			    	for (int j = 0; j < slide.getShapes().size(); j++) {
+			    		com.aspose.slides.IShape shape = slide.getShapes().get_Item(j);
+			    		if(shape instanceof com.aspose.slides.AutoShape){
+			    			if (((com.aspose.slides.IAutoShape)shape).getTextFrame() != null) {
+			    				writer.write(slidesExtractFonts(((com.aspose.slides.IAutoShape) shape).getTextFrame()) );
+			    			}
+			    		} else if(shape instanceof com.aspose.slides.LegacyDiagram) {
+			    			com.aspose.slides.LegacyDiagram legacy=(com.aspose.slides.LegacyDiagram)shape;
+			    			com.aspose.slides.ISmartArt smart=legacy.convertToSmartArt();
+			    			for(com.aspose.slides.ISmartArtNode node:smart.getAllNodes()){
+			    				if(node.getTextFrame()!=null){
+			    					writer.write(slidesExtractFonts(node.getTextFrame()));
+			    				}
+			    			}
+			    		} else if(shape instanceof com.aspose.slides.SmartArt) {
+			    			com.aspose.slides.ISmartArt smart=(com.aspose.slides.ISmartArt)shape;
+			    			for(com.aspose.slides.ISmartArtNode node:smart.getAllNodes()){
+			    				if(node.getTextFrame()!=null){
+			    					writer.write(slidesExtractFonts(node.getTextFrame()));
+			    				}
+			    			}
+			    		} else if (shape instanceof com.aspose.slides.Table) {
+			    			com.aspose.slides.ITable table=(com.aspose.slides.ITable)shape;
+			    			for(int u=0;u<table.getRows().size();u++){
+			    				for(int v=0;v<table.getColumns().size();v++){
+			    					com.aspose.slides.ICell cell=table.get_Item(v, u);
+			    					if(cell.getTextFrame()!=null ){
+				    					writer.write(slidesExtractFonts(cell.getTextFrame()));
+			    					}
+			    				}
+			    			}
+			    		}
+			    	}
+			    }
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				slides = null; pres = null;
+			}
+		}
+		else if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext) )
+		{
+			//extract word to text
+			com.aspose.words.Document doc = new com.aspose.words.Document(workingFile.getPath());
+			doc.save(txtPath,com.aspose.words.SaveFormat.TEXT);
+
+		}
+		else if (extEmailList.contains(ext))
+		{
+			//extract email to text			
+			com.aspose.email.MailMessage message;
+			try ( Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(txtPath, false), StandardCharsets.UTF_8 )) ) {
+				message = com.aspose.email.MailMessage.load(workingFile.getPath());
+				writer.write("From: " + message.getFrom()+"\n");
+				writer.write("To: " + message.getTo()+ "\n");
+				writer.write("Cc: " + message.getCc()+ "\n");
+				writer.write("Subject: "+ message.getSubject()+ "\n");
+				writer.write("Date: "+ message.getDate()+ "\n");
+				writer.write("Body: " + "\n" + message.getHtmlBodyText());
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				message = null;
+			}
+		}
+		else if (extCellList.contains(ext))
+		{
+			//extract cell to text
+			com.aspose.cells.Workbook workbook;
+			try ( Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(txtPath, false), StandardCharsets.UTF_8 )) ) {
+				workbook = new com.aspose.cells.Workbook(workingFile.getPath());
+				// Text save options. You can use any type of separator
+				com.aspose.cells.TxtSaveOptions opts = new com.aspose.cells.TxtSaveOptions();
+				opts.setSeparator('\t');
+				// Copy each worksheet data in text format inside workbook data array
+				for (int idx = 0; idx < workbook.getWorksheets().getCount(); idx++) {
+					byte[] workbookData = new byte[0];// 0-byte array
+					// Save the active worksheet into text format
+					ByteArrayOutputStream bout = new ByteArrayOutputStream();
+					workbook.getWorksheets().setActiveSheetIndex(idx);
+					workbook.save(bout, opts);
+
+					// Save the worksheet data into sheet data array
+					byte[] sheetData = bout.toByteArray();
+
+					// Combine this worksheet data into workbook data array
+					byte[] combinedArray = new byte[workbookData.length + sheetData.length];
+					System.arraycopy(workbookData, 0, combinedArray, 0, workbookData.length);
+					System.arraycopy(sheetData, 0, combinedArray, workbookData.length, sheetData.length);
+
+					workbookData = combinedArray;
+					writer.write(new String(workbookData, StandardCharsets.UTF_8));
+				}
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				workbook=null; 
+			}
+		}
+		oLog.WriteLog(pageName, "extract", "output=" + txtPath, jobID, false);
+		
+		return FileUtils.readFileToString(new File(txtPath), "UTF-8");	
+	
 	}
 	
 	private String extractToText(File workingFile,String inputFileName,String ext,String jobID)
@@ -1338,13 +1575,21 @@ private String loadAsposeLicense() {
 		String output = "";
 		
 		try {
+			String styleWriting = null;
+			
 			//create working folder
 			String root = workingFile.getParent();
-			String xliffPath = root + File.separator + "pack1"+File.separator+"work"+File.separator + inputFileName +".xlf"; 
+//			String xliffPath = root + File.separator + "pack1"+File.separator+"work"+File.separator + inputFileName +".xlf"; 
+			String xliffPath = outputPath;
 			File xliffFile = new File(xliffPath);
 			if (!xliffFile.getParentFile().exists()) xliffFile.getParentFile().mkdirs();		
 
 			oLog.WriteLog(pageName, "extract", "start extract", jobID, false);
+			
+			//Check Existing output file
+			if(new File(outputPath).exists()) {
+				deleteFile(outputPath);
+			}
 			
 			if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext)) {
 				com.aspose.words.Document doc = null;
@@ -1372,21 +1617,44 @@ private String loadAsposeLicense() {
 					        // Check all runs in the paragraph for page breaks and remove them.
 						   int xID = 1;
 						   runs = para.getChildNodes(com.aspose.words.NodeType.RUN, true);
+						   /*** Start Add SPCID ***/
+						   spcID = 0;
+						   /*** End Add SPCID ***/
 						   for (com.aspose.words.Run run : (Iterable<com.aspose.words.Run>) runs) {	
 							   if (!checkIgnoreField(para,run) && !run.isDeleteRevision()) {
 								   String sText = run.getText();
+								   String styleOrigianl = run.getParentParagraph().getParagraphFormat().getStyleName();
+								   styleWriting = rp.getProp(styleOrigianl.replace(" ", ""));
+								   if(styleWriting == null) {
+									   styleWriting = styleOrigianl.replace(" ", "").toLowerCase();
+								   }
+//								   System.out.println("styleOrigianl: "+styleOrigianl);
+//								   System.out.println("styleWriting: "+styleWriting);
 								   if (prevRun==null) {
 									   sbParagraph.append(""+CleanExtractRunText(sText));
 								   }else if(IsRunSameFontStyle(prevRun.getFont(), run.getFont(),paragraphID) && !IsForceXTag(sText,paragraphID)) {
 									   sbParagraph.append(""+CleanExtractRunText(sText));
 								   }else {
 									   String sLast = getLastIndex(sbParagraph.toString());
-										  String sFirst = getFirstIndex(sText);
+									   String sFirst = getFirstIndex(sText);
+									   boolean pcTag = false;
 										  if (!isNumeric(sLast) && !isNumeric(sFirst)) {
-												 sbParagraph.append("<x id=\""+xID+"\"/>");
+											  	String styleOfRun = getStyleOfRun(run);
+											  	if(styleOfRun == null) {
+											  		sbParagraph.append("<pc id=\""+xID+"\"/>");
+											  		pcTag = true;
+											  	}else {
+											  		sbParagraph.append("<pc id=\""+xID+"\" fs:fs=\""+styleOfRun+"\"/>");
+											  		pcTag = true;
+											  	}
 												 xID++;
 										  }
-										 sbParagraph.append(CleanExtractRunText(sText));
+										  if(pcTag) {
+											  sbParagraph.append(CleanExtractRunText(sText)).append("</pc>");
+										  }else {
+											  sbParagraph.append(CleanExtractRunText(sText));
+										  }
+										 
 								   }
 							   }else {
 								   if (null != run.getText() && run.getText().toUpperCase().indexOf("REF") >= 0 && sbParagraph.toString().length() > 0) {
@@ -1405,7 +1673,7 @@ private String loadAsposeLicense() {
 							 //System.out.println(sbParagraph.toString());
 								String sSource = sbParagraph.toString();
 								sSource = removeTagXDateMain(sSource, sLangSource, jobID);
-								writer.write("<unit id=\"pid"+paragraphID+"\">\n"
+								writer.write("<unit id=\"pid"+paragraphID+"\" fs:fs=\""+styleWriting+ "\">\n"
 //										+ "<notes>\n"
 //										+ "<note category=\"\"></note>\n"
 //										+ "<note category=\"\"></note>\n"
@@ -1444,17 +1712,17 @@ private String loadAsposeLicense() {
 			
 			oLog.WriteLog(pageName, "extract", "end extract output=" + xliffPath, jobID, false);
 			
-			if(outputPath.length()<1) {
-				
-				output = FileUtils.readFileToString(new File(xliffPath));
-			}else {
-				//Check Existing output file
-				if(new File(outputPath).exists()) {
-					deleteFile(outputPath);
-				}
-				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
-				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
-			}
+//			if(outputPath.length()<1) {
+//				
+//				output = FileUtils.readFileToString(new File(xliffPath));
+//			}else {
+//				//Check Existing output file
+//				if(new File(outputPath).exists()) {
+//					deleteFile(outputPath);
+//				}
+//				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
+//				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
+//			}
 			
 			
 		} catch (Exception e) {
@@ -1464,6 +1732,29 @@ private String loadAsposeLicense() {
 		return output;
 	}
 	
+
+	private String getStyleOfRun(Run run) {
+		String style = null;
+		boolean boldCheck = run.getFont().getBold();
+		if(boldCheck) {
+			style = "b";
+		}
+		
+		//Check Italic
+		boolean italic = run.getFont().getItalic();
+		if(italic) {
+			style = "i";
+		}
+		//Check Underline
+		int underline = run.getFont().getUnderline();
+		if(underline == 1) {
+			style = "u";
+		}
+		
+		
+		return style;
+	}
+
 	private void deleteFile(String filePath) {
 		File file = new File(filePath); 
 		file.delete();	
@@ -1677,7 +1968,8 @@ private String loadAsposeLicense() {
 			
 			//create working folder
 			String root = workingFile.getParent();
-			String xliffPath = root + File.separator + "pack1"+File.separator+"work"+File.separator + inputFileName +".xlf"; 
+//			String xliffPath = root + File.separator + "pack1"+File.separator+"work"+File.separator + inputFileName +".xlf"; 
+			String xliffPath = outputPath;
 			File xliffFile = new File(xliffPath);
 			if (!xliffFile.getParentFile().exists()) xliffFile.getParentFile().mkdirs();		
 
@@ -1798,17 +2090,17 @@ private String loadAsposeLicense() {
 			
 //			FileUtils.copyFile(workingFile,outputFile);
 //			String workingFilePath = workingFile.getPath();
-			if(outputPath.length() <1) {
-				output = FileUtils.readFileToString(new File(xliffPath));
-				
-			}else {
-				//Check Existing output file
-				if(new File(outputPath).exists()) {
-					deleteFile(outputPath);
-				}
-				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
-				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
-			}
+//			if(outputPath.length() <1) {
+//				output = FileUtils.readFileToString(new File(xliffPath));
+//				
+//			}else {
+//				//Check Existing output file
+//				if(new File(outputPath).exists()) {
+//					deleteFile(outputPath);
+//				}
+//				Path temp = Files.move(Paths.get(xliffPath), Paths.get(outputPath));
+//				output = "Generate Xliff file: \""+outputPath+ "\" finished.";
+//			}
 		} catch (Exception e) {
 			throw e;
 		}
@@ -1926,6 +2218,119 @@ private String loadAsposeLicense() {
 		return output;
 	}
 	
+	/*** Start Add 2021-05-24 ***/
+	public String mergeFromXliffAsposeExcellV2(String jobID,File workingFile,String xliffPath,String sLangSource,String sLangTarget,String outputPath)  throws Exception {
+		String output = "";
+		Workbook workbook = null;
+		oLog.WriteLog(pageName, "mergeFromXliffAsposeExcell",  "Start merge output=" + outputPath, jobID, false);
+
+		try {
+			String xliffTranslated = FileUtils.readFileToString(new File(xliffPath), "UTF-8");
+			xliffTranslated = CleanMergeRunText(xliffTranslated);
+			//create working folder
+			workbook = new Workbook(workingFile.getPath()); 
+			int iNumberSheet = workbook.getWorksheets().getCount();
+			for (int i = 0; i < iNumberSheet; i++) {
+			
+				Worksheet sheet = workbook.getWorksheets().get(i);
+				Cells cells = sheet.getCells();
+				Iterator iterator = cells.iterator();
+				StringBuilder sbCellText = new StringBuilder("");
+				while(iterator.hasNext())
+				{
+					Cell cell = (Cell)iterator.next();
+					String sCellText = cell.getStringValue();
+					String sCellTextNoFormat = cell.getStringValueWithoutFormat();
+					String[] sArrCellText = getTranslatedCellTextV2(xliffTranslated, sLangTarget, i+1, cell.getName());
+					int k = 0;
+					if (null != cell.getCharacters()) {
+						FontSetting[] arrOriFontSettings = cell.getCharacters();
+						String sPrevText = "";
+						String sPrevAllText = "";
+						List<Integer> iIndexList = new ArrayList();
+						for (int j = 0; j < arrOriFontSettings.length; j++ ) {
+							
+							if (null != sArrCellText && sArrCellText.length > 0 && k < sArrCellText.length){
+									String sTargetText = replaceSpacialChar3(sArrCellText[k]);
+									if (nonLanguage.contains(sLangSource)) {
+									   if (null != sPrevText && sPrevText.length() > 0 && null != sTargetText && sTargetText.length() > 0)  {
+										   String lastStr = sPrevText.substring(sPrevText.length()-1);
+										   String firstStr = sTargetText.substring(0,1);
+										   if (!LastStringSkip.contains(lastStr) && !firstStringSkip.contains(firstStr)){
+											   sTargetText = " " + sTargetText;
+										   }
+									   }
+								    }
+								    sPrevText = sTargetText;
+									iIndexList.add(sTargetText.length());
+									sPrevAllText = sPrevAllText + sTargetText;
+									k++;
+							}else {
+								iIndexList.add(0);
+							}
+						}
+						cell.putValue(sPrevAllText);
+						int iSumAllIndex = 0;
+						for (int l = 0; l < arrOriFontSettings.length; l++ ) {
+							FontSetting fontSetting = arrOriFontSettings[l];
+							if (l > 0) {
+								iSumAllIndex = iSumAllIndex + iIndexList.get(l-1);
+							}
+							if (iIndexList.get(l) > 0) {
+								
+								Color color = new Color();
+								color.fromArgb(fontSetting.getFont().getColor().toArgb());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setColor(color);
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setScriptOffset(fontSetting.getFont().getScriptOffset());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setArgbColor(fontSetting.getFont().getArgbColor());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setBold(fontSetting.getFont().isBold());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setCapsType(fontSetting.getFont().getCapsType());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setCharset(fontSetting.getFont().getCharset());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setItalic(fontSetting.getFont().isItalic());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setNormalizeHeights(fontSetting.getFont().isNormalizeHeights());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setSize(fontSetting.getFont().getSize());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setStrikeout(fontSetting.getFont().isStrikeout());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setStrikeType(fontSetting.getFont().getStrikeType());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setSubscript(fontSetting.getFont().isSubscript());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setSuperscript(fontSetting.getFont().isSuperscript());
+//								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setThemeColor(fontSetting.getFont().getThemeColor());
+								cell.characters(iSumAllIndex, iIndexList.get(l)).getFont().setUnderline(fontSetting.getFont().getUnderline());
+							}
+						}
+					}else {
+						if (null == cell.getFormula() && null != sCellText && sCellText.length() > 0 && !lSkipCellExtract.contains(cell.getNumberCategoryType()) && !(isNumeric(sCellText) || isNumeric(sCellTextNoFormat))) {
+							if (null != sArrCellText && sArrCellText.length > 0 && k < sArrCellText.length) {
+								String targetText = replaceSpacialChar3(sArrCellText[k]);
+								cell.putValue(targetText);
+							}
+						}
+					}
+				}
+			}
+	
+			File fFile = new File(outputPath);
+			if (!fFile.exists()) {
+				fFile.mkdirs();
+			}
+		    //save output file after update translate output
+			workbook.getSettings().setCalcMode(CalcModeType.AUTOMATIC);
+			workbook.getSettings().setRecalculateBeforeSave( true);
+			workbook.getSettings().setReCalculateOnOpen(true);
+		    workbook.save(outputPath);
+		    workbook = null;
+			
+			oLog.WriteLog(pageName, "mergeFromXliffAsposeExcell",  "end merge output=" + outputPath, jobID, false);
+			byte[] bData = FileUtils.readFileToByteArray(new File(outputPath));
+			output = new String(Base64Coder.encode(bData));
+			
+		} catch (Exception e) {
+			throw e;
+		}
+		
+		return output;
+	}
+	/*** End Add 2021-05-24 ***/
+	
 	private void UpdateJobInprocess(String jobId, Integer percent, Double fileSize, String status) {
 		try {
 			if ((jobsInprocess == null || jobsInprocess.size() == 0) && app != null && app.getAttribute(jobsInProcessKey) != null) {
@@ -1958,6 +2363,7 @@ private String loadAsposeLicense() {
 			
 		} catch (Exception e) {
 			oLog.writeError(pageName + ":UpdateJobInprocess", jobId, e);
+			throw e;
 		}
 	}
 	
@@ -1967,6 +2373,7 @@ private String loadAsposeLicense() {
 			oLog.WriteLog(pageName, "RemoveJobInprocess", "abbyy: Removed", jobId, false);
 		} catch (Exception e) {
 			oLog.writeError(pageName + ":RemoveJobInprocess", jobId, e);
+			throw e;
 		}
 	}
 	
@@ -2127,8 +2534,10 @@ private String loadAsposeLicense() {
 			
 			if(size == 1) {
 				tempEncrypt = "U" + SpChrList.get(0);
-				outputStr = outputStr.substring(0, (indexSpChrList.get(startIndex)) +  tempindex -(i > 0? startIndex :0 ) ) + "<x id=\"SPC" + i + "\" encrypt=\"" + tempEncrypt  +"\"/>" + outputStr.substring((indexSpChrList.get(startIndex)+tempindex-(i > 0? startIndex :0 ))+1);
-
+//				outputStr = outputStr.substring(0, (indexSpChrList.get(startIndex)) +  tempindex -(i > 0? startIndex :0 ) ) + "<x id=\"SPC" + i + "\" encrypt=\"" + tempEncrypt  +"\"/>" + outputStr.substring((indexSpChrList.get(startIndex)+tempindex-(i > 0? startIndex :0 ))+1);
+//				outputStr = outputStr.substring(0, (indexSpChrList.get(startIndex)) +  tempindex -(i > 0? startIndex :0 ) ) + "<ph id=\"SPC" + spcID + "\" encrypt=\"" + tempEncrypt  +"\" fs:fs=\"br\"/>" + outputStr.substring((indexSpChrList.get(startIndex)+tempindex-(i > 0? startIndex :0 ))+1);
+				outputStr = outputStr.substring(0, (indexSpChrList.get(startIndex)) +  tempindex -(i > 0? startIndex :0 ) ) + "<ph id=\"SPC" + spcID + "\" fs:fs=\"br\"/>" + outputStr.substring((indexSpChrList.get(startIndex)+tempindex-(i > 0? startIndex :0 ))+1);
+				spcID++;
 			}else {
 				for (int j = 0; j < size -1; j++) {
 					count++;
@@ -2262,6 +2671,7 @@ private String loadAsposeLicense() {
 				sTarget = sSource;
 				// TODO: handle exceptiont
 				oLog.WriteLog(pageName, "removeTagXDateMain",  e.getMessage(), jobID, true);
+				throw e;
 			}
 			return sTarget;
 		}
@@ -2282,7 +2692,7 @@ private String loadAsposeLicense() {
 			return sTarget;
 		}
 		
-		private boolean validateXML(String xmlData) {
+		private boolean validateXML(String xmlData) throws Exception {
 
 			boolean bValid = false;
 			try {
@@ -2295,7 +2705,8 @@ private String loadAsposeLicense() {
 				bValid = true;
 
 			} catch (Exception ex) {
-				// instance document is invalid!			
+				// instance document is invalid!	
+				throw ex;
 			}
 			return bValid;
 		}
@@ -2308,6 +2719,32 @@ private String loadAsposeLicense() {
 		private String[] getTranslatedCellText(String xliffInputConntent ,String targetLanguage, int iSheetNumber, String sCellName)
 		{
 			Pattern pTU = Pattern.compile("<trans-unit[ ]id=\"SHEET"+iSheetNumber+"-"+sCellName+"\"[ ][^<>]*>(.+?)</trans-unit>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+//			Pattern pTarget = Pattern.compile("<source xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/source>",
+			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			
+			Matcher mTU = pTU.matcher(xliffInputConntent);
+			String sTU = "",sTarget = "";
+			if (mTU.find()) {
+				// All content in TU
+				sTU = mTU.group(1) == null  ? "" : mTU.group(1);
+//				System.out.println("sTu " + sTU);
+				if (sTU.length() > 0)
+				{
+					Matcher mTarget = pTarget.matcher(sTU);
+					if (mTarget.find()) {
+						sTarget = mTarget.group(1) == null ? "" : mTarget.group(1);
+					}				
+				}
+			}
+//			System.out.println("sTarget :::" + sTarget);
+			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
+		}
+		
+		private String[] getTranslatedCellTextV2(String xliffInputConntent ,String targetLanguage, int iSheetNumber, String sCellName)
+		{
+			Pattern pTU = Pattern.compile("<unit[ ]id=\"SHEET"+iSheetNumber+"-"+sCellName+"\"[ ][^<>]*>(.+?)</unit>",
 					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 //			Pattern pTarget = Pattern.compile("<source xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/source>",
 			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
@@ -2925,10 +3362,16 @@ private String loadAsposeLicense() {
 				String xliffInputPath,
 				String sLangSource,
 				String sLangTarget,
-				String sOutputPath
+				String sOutputPath,
+				int XliffVersion
 				) throws Exception {
 			String output = "";
-			
+			String xliffVersion = null;
+			if(XliffVersion == 1) {
+				xliffVersion = "xliff";
+			}else if(XliffVersion == 2){
+				xliffVersion = "xliff2";
+			}
 			try {
 				
 				File workingFile = null;
@@ -2963,29 +3406,53 @@ private String loadAsposeLicense() {
 				}
 				
 				oLog.WriteLog(pageName, "merge", "working path=" + workingFile.getPath(), jobID, false);
-				
-				if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext)){		
+				if (xliffVersion.equals("xliff")) {
+					if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext)) {
 
-					//udpate workingFile
-					if (abbyyExtToXliffList.contains(ext))
-					{
-						workingFile = new File(workingPath + ".docx");
-						outputPath = outputPath + ".docx";
-					}
-					
-					output = mergeFromXliffAspose( jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath);
-					sOutputPath = outputPath;
-				}else if (extCellList.contains(ext)){
-					//20200402: Ramoslee: Change to use Aspose.
-					output = mergeFromXliffAsposeExcell(jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath);
-					sOutputPath = outputPath;
-				}
-				else if (extSlideList.contains(ext)){
+						// udpate workingFile
+						if (abbyyExtToXliffList.contains(ext)) {
+							workingFile = new File(workingPath + ".docx");
+							outputPath = outputPath + ".docx";
+						}
+
+						output = mergeFromXliffAspose(jobID, workingFile, xliffPath, sLangSource, sLangTarget,
+								outputPath);
+						sOutputPath = outputPath;
+					} else if (extCellList.contains(ext)) {
+						// 20200402: Ramoslee: Change to use Aspose.
+						output = mergeFromXliffAsposeExcell(jobID, workingFile, xliffPath, sLangSource, sLangTarget,
+								outputPath);
+						sOutputPath = outputPath;
+					} else if (extSlideList.contains(ext)) {
 //					output = mergeFromXliffAkapi(jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath,ext);
-					output = mergeFromXliffAsposeSlide(jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath, ext);
-					sOutputPath = outputPath;
-				}
+						output = mergeFromXliffAsposeSlide(jobID, workingFile, xliffPath, sLangSource, sLangTarget,
+								outputPath, ext);
+						sOutputPath = outputPath;
+					}
+				}else if(xliffVersion.equals("xliff2")) {
+					if (extWordList.contains(ext) || abbyyExtToXliffList.contains(ext)) {
 
+						// udpate workingFile
+						if (abbyyExtToXliffList.contains(ext)) {
+							workingFile = new File(workingPath + ".docx");
+							outputPath = outputPath + ".docx";
+						}
+
+						output = mergeFromXliffAsposeV2(jobID, workingFile, xliffPath, sLangSource, sLangTarget,
+								outputPath);
+						sOutputPath = outputPath;
+					}else if (extCellList.contains(ext)) {
+						// 20200402: Ramoslee: Change to use Aspose.
+						output = mergeFromXliffAsposeExcellV2(jobID, workingFile, xliffPath, sLangSource, sLangTarget,
+								outputPath);
+						sOutputPath = outputPath;
+					} else if (extSlideList.contains(ext)) {
+//					output = mergeFromXliffAkapi(jobID, workingFile, xliffPath, sLangSource, sLangTarget, outputPath,ext);
+						output = mergeFromXliffAsposeSlideV2(jobID, workingFile, xliffPath, sLangSource, sLangTarget,
+								outputPath, ext);
+						sOutputPath = outputPath;
+					}
+				}
 				
 			}catch ( Exception e ) {
 				oLog.WriteLog(pageName, "merge",  e.getMessage(), jobID, true);
@@ -3277,6 +3744,7 @@ private String loadAsposeLicense() {
 						doc.updateFields();
 					}catch(Exception e) {
 						oLog.WriteLog(pageName, "merge", oLog.getStackTrace(e), jobID, true);
+						throw e;
 					}
 				    
 				    //save output file after update translate output
@@ -3295,7 +3763,301 @@ private String loadAsposeLicense() {
 			return output;
 		}
 		
-		private FontConfig getFontConfigFile(String configPath) {
+		public String mergeFromXliffAsposeV2(String jobID,File workingFile,String xliffPath,String sLangSource,String sLangTarget,String outputPath) throws Exception {
+			String output = "";
+			try {
+					
+
+				oLog.WriteLog(pageName, "merge", "start merge", jobID, false);
+				String defaultFont = "";
+				
+				/*Start Ramoslee 20200312: Fix 19: Font Style.*/
+				FontConfig fontConfig = getFontConfigFile(fontConfigPath);
+				 LangPair firstPriority = null;
+				 LangPair secondPriority = null;
+				 String font = "";
+				if (null != fontConfig) {
+					HashMap<String,  LangPair> hashMap = getFontConfigByTargetLanguage(fontConfig, sLangSource, sLangTarget);
+		            firstPriority = hashMap.get(sLangSource+"-"+sLangTarget);
+		            secondPriority = hashMap.get(sLangTarget);
+		            
+		            
+		            if(null == firstPriority && null != secondPriority) {
+		            	defaultFont = getFont(secondPriority.getFonts(), "*");
+		            }
+				}
+				/* End Ramoslee 20200312: Fix 19: Font Style.*/
+					String xliffTranslated = FileUtils.readFileToString(new File(xliffPath), "UTF-8");
+					
+					com.aspose.words.Document doc = new com.aspose.words.Document(workingFile.getPath());
+				    // Retrieve all paragraphs in the document.
+					com.aspose.words.NodeCollection paragraphs = doc.getChildNodes(com.aspose.words.NodeType.PARAGRAPH, true);
+				    // Iterate through all paragraphs
+					int paragraphID = 1;
+				    for (com.aspose.words.Paragraph para : (Iterable<com.aspose.words.Paragraph>) paragraphs) {
+				    	if (para.getRuns().getCount() > 0)
+				    	{
+				    		
+				    		/*Start :20200309 Ramoslee Fix Bullet Issue*/
+						   if (para.isListItem()) {
+							   
+							   ListFormat format = para.getListFormat();
+							   
+							   /*Set number Style. REF: https://apireference.aspose.com/java/words/com.aspose.words/NumberStyle */
+							   int k = format.getListLevelNumber();
+							   for (int l = 0; l <= k ; l++) {
+								   format.setListLevelNumber(l);
+								   Integer numberStyle = format.getListLevel().getNumberStyle();
+								   if ("EN".equalsIgnoreCase(sLangTarget)) {
+									   if (countingNumberStyle.contains(numberStyle)) {
+										   para.getListFormat().getListLevel().setNumberStyle(0); // Arabic Numbering 
+									   }
+									   
+								   // If the bullet point is I, II, III, we should translate as 一、二、三, vice versa.
+								   }else if ("ZH".equalsIgnoreCase(sLangTarget)) {
+									   if (NumberStyle.UPPERCASE_ROMAN == numberStyle) { // I, II, III, ...
+										   para.getListFormat().getListLevel().setNumberStyle(NumberStyle.TRAD_CHIN_NUM_3); // 一、二、三, ... Taiwanese counting thousand
+									   }
+								   }
+							   }
+							   
+							   /* Replace Comma and Full Stop in number format*/
+							   if ("EN".equalsIgnoreCase(sLangTarget)) {
+								   String numberFormat = format.getListLevel().getNumberFormat();
+								   String tempNumberFormat = "";
+								   for (int l = 0; l < numberFormat.length(); l++) {
+									   char chr = numberFormat.charAt(l);
+									   if (commaUnicode.contains((int) chr)) {
+										   chr = ',';
+									   }else if (fullStopUnicode.contains((int)chr)) {
+										   chr = '.';
+									   }
+									   
+									   tempNumberFormat = tempNumberFormat + chr;
+								   }
+								   format.getListLevel().setNumberFormat(tempNumberFormat);
+								   
+							  // If the bullet point is I, II, III, we should translate as 一、二、三, vice versa.
+							   }else if ("ZH".equalsIgnoreCase(sLangTarget)) { 
+									   String numberFormat = format.getListLevel().getNumberFormat();
+									   String tempNumberFormat = "";
+									   for (int l = 0; l < numberFormat.length(); l++) {
+										   char chr = numberFormat.charAt(l);
+										   if ( 44 == (int) chr) { // 44 (,) comma
+											   chr = (char) 12289; // 12289 (、) IDEOGRAPHIC COMMA
+										   }
+										   
+										   tempNumberFormat = tempNumberFormat + chr;
+									   }
+									   format.getListLevel().setNumberFormat(tempNumberFormat);
+								}
+			   
+						   }
+						   /*End :20200309 Ramoslee Fix Bullet Issue*/
+				    		
+				    		//Get translated output paragraph
+							String[] sTranslatedParagraph = getTranslatedParagraphV2(xliffTranslated,sLangTarget,paragraphID);
+							String[] sTranslatedParagraphSource = getTranslatedParagraphFromSourceV2(xliffTranslated,sLangSource,paragraphID);	
+
+							
+				    		com.aspose.words.Run prevRun = null;
+					        // Check all runs in the paragraph for page breaks and remove them.
+						   int xIndex = 0;
+						   String prevText = "";
+						   font = "";
+						   com.aspose.words.NodeCollection runs = para.getChildNodes(com.aspose.words.NodeType.RUN, true);
+						   // 20200403: Ramoslee : Fix text missing if font is deffirent with previous text.
+						   com.aspose.words.NodeCollection originalRun = para.getChildNodes(com.aspose.words.NodeType.RUN, true);
+						   List<com.aspose.words.Run> originalRunList = new ArrayList();
+						   for (com.aspose.words.Run run : (Iterable<com.aspose.words.Run>) originalRun) {	
+							   originalRunList.add(run);
+						   }
+						   // End: 20200403: Ramoslee
+						   int j = 0;
+						   String sTextConcat = "";
+						   boolean bGetTarget = true;
+						   boolean bPageBreak = false;
+						   for (com.aspose.words.Run run : (Iterable<com.aspose.words.Run>) runs) {	
+//							   com.aspose.words.Run runBeforeChange = (Run) run.deepClone(true);
+							   // 20200403: Ramoslee : Fix text missing if font is deffirent with previous text.
+							   com.aspose.words.Run runBeforeChange = null;
+							   runBeforeChange = (Run) originalRunList.get(j);
+							   // End: 20200403: Ramoslee
+							   bPageBreak = false;
+							   if (!checkIgnoreField(para,run) && !run.isDeleteRevision()) // Ramoslee 20200310: Take only text was not deleted.
+							   {
+								   // 20201020: Ramoslee: Fix page break issue.
+								   if (run.getText().contains(ControlChar.PAGE_BREAK)) {
+									   bPageBreak = true;
+									}
+								   // End 20201020
+								   String sText = run.getText();
+								   sText = sText.replaceAll("\\u00a0", " ");
+								   sTextConcat = sTextConcat + sText;
+								   String sSourceText = "";
+								   if (sTranslatedParagraphSource.length > xIndex) {
+									   sSourceText = sTranslatedParagraphSource[xIndex].replaceAll("\\u00a0", " ").replaceAll("LSEOSDLS", "");
+								   }
+								   sSourceText = replaceSpacialChar3(CleanMergeRunText(sSourceText));
+								   if (prevRun==null)
+								   {
+									   
+									   //System.out.println("-----------------paragraphID=" + paragraphID + "-----------------");
+									   //System.out.println("START\t" + sText);
+									   //System.out.println("START TX\t" + getSpacialChar(sText) + CleanMergeRunText(sTranslatedParagraph[xIndex]));
+									   if (sTranslatedParagraph.length > xIndex) {
+//										   run.setText(getSpacialChar(sText) + CleanMergeRunText(sTranslatedParagraph[xIndex]));
+										   /*Ramoslee 20200312 : Fix Tab issue: the <x id="SPC..." will be replaced with original special character*/
+//										   run.setText(repleceSpacialChar(sText, CleanMergeRunText(sTranslatedParagraph[xIndex])));
+//										   run.setText(replaceSpacialChar3(CleanMergeRunText(sTranslatedParagraph[xIndex])));
+										   String targetText = replaceSpacialChar3(CleanMergeRunText(sTranslatedParagraph[xIndex]));
+										   prevText = targetText;
+									   		run.setText(targetText);
+									   		bGetTarget = false;
+									   }else  run.setText("");
+								   }else {
+									   if (sTranslatedParagraph.length > xIndex) {
+										  
+										  
+										   if (bGetTarget && sSourceText.trim().indexOf(sText.trim()) == 0 && sText.trim().length() > 0) {
+											   String targetText = replaceSpacialChar3(CleanMergeRunText(sTranslatedParagraph[xIndex]));
+											   if (nonLanguage.contains(sLangSource)) {
+												   if (null != prevText && prevText.length() > 0 && null != targetText && targetText.length() > 0)  {
+													   String lastStr = prevText.substring(prevText.length()-1);
+													   String firstStr = targetText.substring(0,1);
+													   if (!LastStringSkip.contains(lastStr) && !firstStringSkip.contains(firstStr)){
+														   targetText = " " + targetText;
+													   }
+												   }
+											   }
+											   prevText = targetText;
+											   run.setText(targetText);
+											   bGetTarget = false;
+//											   xIndex++;
+										   }else if (bGetTarget && sSourceText.equals(sText)) {
+											   String targetText = replaceSpacialChar3(CleanMergeRunText(sTranslatedParagraph[xIndex]));
+											   if (nonLanguage.contains(sLangSource)) {
+												   if (null != prevText && prevText.length() > 0 && null != targetText && targetText.length() > 0)  {
+													   String lastStr = prevText.substring(prevText.length()-1);
+													   String firstStr = targetText.substring(0,1);
+													   if (!LastStringSkip.contains(lastStr) && !firstStringSkip.contains(firstStr)){
+														   targetText = " " + targetText;
+													   }
+												   }
+											   }
+											   prevText = targetText;
+											   run.setText(targetText);
+											   bGetTarget = false;
+//											   xIndex++;
+										   } else {
+											   run.setText("");
+										   }
+									   }else  run.setText("");
+								   }
+								   
+								   if (sTextConcat.equals(sSourceText)){
+									   xIndex++;
+									   sTextConcat = "";
+									   bGetTarget = true;
+								   }
+//								   /*Ramoslee 20200312: Content is missing*/
+//								   else if (IsRunSameFontStyle(prevRun.getFont(), run.getFont(),paragraphID) && !IsForceXTag(sText,paragraphID))
+//								   {			
+//									   //System.out.println("SAME\t" + sText);
+//									   run.setText("");
+//									   xIndex--;
+//								   }
+//								   else
+//								   {
+//									   //System.out.println("DIFF\t" + sText);
+//									   //System.out.println("DIFF TX\t" + getSpacialChar(sText) + CleanMergeRunText(sTranslatedParagraph[xIndex]));
+//									   if (sTranslatedParagraph.length > xIndex) {
+////										   run.setText(getSpacialChar(sText) + CleanMergeRunText(sTranslatedParagraph[xIndex]));
+//										   /*Ramoslee 20200312 : 
+//										    * 1. Fix Tab issue: the <x id="SPC..." will be replaced with original special character
+//										    * 2. Fix add " " if previous text is difference style*/
+//										   String targetText = replaceSpacialChar3(CleanMergeRunText(sTranslatedParagraph[xIndex]));
+//										   if (nonLanguage.contains(sLangSource)) {
+//											   if (null != prevText && prevText.length() > 0 && null != targetText && targetText.length() > 0)  {
+//												   String lastStr = prevText.substring(prevText.length()-1);
+//												   String firstStr = targetText.substring(0,1);
+//												   if (!LastStringSkip.contains(lastStr) && !firstStringSkip.contains(firstStr)){
+//													   targetText = " " + targetText;
+//												   }
+//											   }
+//										   }
+//										   prevText = targetText;
+//										   run.setText(targetText);
+//									   }else  
+//										   run.setText("");
+//								   }
+								   
+									/*Start Ramoslee 20200312: Fix 19: Font Style. One Paragraph One Fonts*/
+								   if ((null != firstPriority || null != secondPriority) && (null == font || font.length() <= 0) && (prevText.length() > 0)) {
+									   if (null != firstPriority) {
+										   font = getFont(firstPriority.getFonts(), runBeforeChange.getFont().getName()); 
+									   }else if (null != defaultFont && defaultFont.length() > 0){
+										   font = defaultFont;
+									   }
+								   }
+								   if (null != font && font.length() > 0) {
+										   run.getFont().setName(font);
+									   }
+								   /*End Ramoslee 20200312: Fix 19: Font Style.*/
+						    	   
+								   // 20201020 : Ramoslee : Fix page break missing.
+								   if (bPageBreak)
+										run.setText(run.getText().concat(ControlChar.PAGE_BREAK));
+								   // End 20201010
+							   }
+							   else
+							   {
+								// Ramoslee 202008: Fix issue 44 for reference field.
+								   if (null != run.getText() && run.getText().toUpperCase().indexOf("REF") >= 0 
+										   && sTranslatedParagraphSource.length > xIndex && sTranslatedParagraphSource[xIndex].length() == 0) {
+									   xIndex++;
+									   sTextConcat = "";
+									   bGetTarget = true;
+								   }
+								   // End: Ramoslee 202008: Fix issue 44 for reference field.
+								   //System.out.println("IGNORE\t" + sText);
+							   }
+							   /*Ramoslee 20200316: Fix issue for the content change after translation.*/
+							   prevRun = runBeforeChange;
+							   j++;
+					       }
+
+						   paragraphID++;						        
+				    	}
+				    }
+				    
+				    // Call the method below to update the TOC
+				    // To skip the Infinite loop detected from ASPOSE.doc.updateFields();
+				    try {
+					    // Call the method below to update the TOC
+						doc.updateFields();
+					}catch(Exception e) {
+						oLog.WriteLog(pageName, "merge", oLog.getStackTrace(e), jobID, true);
+						throw e;
+					}
+				    
+				    //save output file after update translate output
+				    doc.save(outputPath);
+
+				//read output from msoffice file
+				oLog.WriteLog(pageName, "merge",  "end merge output=" + outputPath, jobID, false);
+				byte[] bData = FileUtils.readFileToByteArray(new File(outputPath));
+				output = new String(Base64Coder.encode(bData));
+				
+			}
+			catch ( Exception e ) {
+				oLog.WriteLog(pageName, "merge",  e.getMessage(), jobID, true);
+				throw e;
+			}
+			return output;
+		}
+		
+		private FontConfig getFontConfigFile(String configPath) throws FileNotFoundException {
 			
 			FontConfig fontConfig = null;
 			try {
@@ -3313,12 +4075,15 @@ private String loadAsposeLicense() {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				oLog.WriteLog(pageName, "getFontConfigFile",  e.getMessage(), "", true);
+				throw e;
 //				System.out.println("getFontConfigFile : " + e.getMessage());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				oLog.WriteLog(pageName, "getFontConfigFile",  e.getMessage(), "", true);
+				throw e;
 			} catch (Exception e) {
 				oLog.WriteLog(pageName, "getFontConfigFile",  e.getMessage(), "", true);
+				throw e;
 			}
 			
 			return fontConfig;
@@ -3378,9 +4143,60 @@ private String loadAsposeLicense() {
 			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
 		}
 		
+		private String[] getTranslatedParagraphV2(String xliffInputConntent ,String targetLanguage, int paragraphID)
+		{
+			Pattern pTU = Pattern.compile("<unit[ ]id=\"pid"+paragraphID+"\"[^<>]*>(.+?)<\\/unit>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			
+			Matcher mTU = pTU.matcher(xliffInputConntent);
+			String sTU = "",sTarget = "";
+			while (mTU.find()) {
+				// All content in TU
+				sTU = mTU.group(1) == null  ? "" : mTU.group(1);
+				if (sTU.length() > 0)
+				{
+					Matcher mTarget = pTarget.matcher(sTU);
+					while (mTarget.find()) {
+						sTarget = mTarget.group(1) == null ? "" : mTarget.group(1);
+						break;
+					}				
+				}
+				break;
+			}
+			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
+		}
+		
 		private String[] getTranslatedParagraphFromSource(String xliffInputConntent ,String sSourceLang, int paragraphID)
 		{
 			Pattern pTU = Pattern.compile("<trans-unit[ ]id=\"pid"+paragraphID+"\"[^<>]*>(.+?)<\\/trans-unit>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			Pattern pTarget = Pattern.compile("<source xml:lang=\"" + sSourceLang + "\"[^><]*?>(.+?)<\\/source>",
+//			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			
+			Matcher mTU = pTU.matcher(xliffInputConntent);
+			String sTU = "",sTarget = "";
+			while (mTU.find()) {
+				// All content in TU
+				sTU = mTU.group(1) == null  ? "" : mTU.group(1);
+				if (sTU.length() > 0)
+				{
+					Matcher mTarget = pTarget.matcher(sTU);
+					while (mTarget.find()) {
+						sTarget = mTarget.group(1) == null ? "" : mTarget.group(1);
+						break;
+					}				
+				}
+				break;
+			}
+			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
+		}
+		
+		private String[] getTranslatedParagraphFromSourceV2(String xliffInputConntent ,String sSourceLang, int paragraphID)
+		{
+			Pattern pTU = Pattern.compile("<unit[ ]id=\"pid"+paragraphID+"\"[^<>]*>(.+?)<\\/unit>",
 					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 			Pattern pTarget = Pattern.compile("<source xml:lang=\"" + sSourceLang + "\"[^><]*?>(.+?)<\\/source>",
 //			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
@@ -3513,9 +4329,133 @@ private String loadAsposeLicense() {
 			return output;
 		}
 		
+		public String mergeFromXliffAsposeSlideV2(String jobID,File workingFile,String xliffPath,String sLangSource,String sLangTarget,String outputPath, String ext)  throws Exception {
+			String output = "";
+			
+			oLog.WriteLog(pageName, "mergeFromXliffAsposeSlide", "Start Merge", jobID, false);
+			try {
+				
+				String xliffTranslated = FileUtils.readFileToString(new File(xliffPath), "UTF-8");
+				xliffTranslated = CleanMergeRunText(xliffTranslated);
+				//create working folder
+				String root = workingFile.getParent();
+				Presentation pptxPresentation = null;
+				pptxPresentation = new Presentation(workingFile.getPath());
+			
+				int sizeSlide = pptxPresentation.getSlides().size();
+				int countIndex = 0;
+				
+				for (int i = 0; i < sizeSlide ; i++) {
+					String sSlideText = getTranslatedSlideV2(xliffTranslated, i+1);
+					//Get an Array of TextFrameEx objects from the first slide
+					ITextFrame[] textFramesSlideOne = SlideUtil.getAllTextBoxes(pptxPresentation.getSlides().get_Item(i));
+					countIndex = 1;
+					if (null != sSlideText && sSlideText.trim().length() > 0) {
+						sSlideText = CleanMergeRunText(sSlideText);
+						//Loop through the Array of TextFrames
+						for (int j = 0; j < textFramesSlideOne.length; j++) {
+							//Loop through paragraphs in current TextFrame
+							for(IParagraph para : textFramesSlideOne[j].getParagraphs()) {
+
+								String[] sArrPortionText  = getTranslatedParagraphSlideV2(sSlideText, sLangTarget, i+1, countIndex);
+								String[] sArrPortionTextSource  = getTranslatedParagraphSlideSourceV2(sSlideText, sLangSource, i+1, countIndex);
+								
+								//Loop through portions in the current Paragraph
+								int k = 0;
+								IPortion prevPort = null;
+								String prevText = "";
+								String sTextConcat = "";
+								boolean bGetTarget = true;
+								for(IPortion port : para.getPortions())
+								{
+									//Display text in the current portion
+									prevPort = port;
+									String sText = port.getText();
+									sText = sText.replaceAll("\\u00a0", " ");
+								    sTextConcat = sTextConcat + sText;
+								    String sSourceText = "";
+								    if (sArrPortionTextSource.length > k) {
+								    	sSourceText = sArrPortionTextSource[k].replaceAll("\\u00a0", " ").replaceAll("LSEOSDLS", "");
+								    }
+								    sSourceText = replaceSpacialChar3(CleanMergeRunText(sSourceText));
+								    
+									if (null != sArrPortionText && sArrPortionText.length > 0 && k <  sArrPortionText.length) {
+										
+										if (bGetTarget && (sSourceText.trim().indexOf(sText.trim()) == 0 && sText.trim().length() > 0) 
+												|| (sSourceText.equals(sText))) {
+											String targetText = replaceSpacialChar3(sArrPortionText[k]);
+											if (nonLanguage.contains(sLangSource)) {
+											   if (null != prevText && prevText.length() > 0 && null != targetText && targetText.length() > 0)  {
+												   String lastStr = prevText.substring(prevText.length()-1);
+												   String firstStr = targetText.substring(0,1);
+												   if (!LastStringSkip.contains(lastStr) && !firstStringSkip.contains(firstStr)){
+													   targetText = " " + targetText;
+												   }
+											   }
+										    }
+										    prevText = targetText;
+											port.setText(targetText);
+											bGetTarget = false;
+										}else {
+											port.setText("");
+										}
+									}else {
+										port.setText("");
+									}
+									
+									if (sTextConcat.equals(sSourceText)){
+										   k++;
+										   sTextConcat = "";
+										   bGetTarget = true;
+									   }
+								}
+								
+								countIndex ++;
+							
+							}
+						}
+					}
+				
+				}
+			    
+				File fFile = new File(outputPath);
+				if (!fFile.exists()) {
+					fFile.mkdirs();
+				}
+			    //save output file after update translate output
+			    pptxPresentation.save(outputPath, mSaveFormatSlide.get(ext.toLowerCase()));
+				
+//				oLog.WriteLog(pageName, "merge",  "end merge output=" + outputPath, jobID, false);
+				byte[] bData = FileUtils.readFileToByteArray(new File(outputPath));
+				output = new String(Base64Coder.encode(bData));
+				
+			} catch (Exception e) {
+				throw e;
+			}
+			
+			oLog.WriteLog(pageName, "mergeFromXliffAsposeSlide", "End Merge", jobID, false);
+
+			return output;
+		}
+		
 		private String getTranslatedSlide(String xliffInputConntent, int iSlide)
 		{
 			Pattern pFileSlide = Pattern.compile("<file[ ]original=\"ppt/slides/slide"+ iSlide + ".xml\"[^<>]*><body>(.+?)</body></file>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			
+			Matcher mTU = pFileSlide.matcher(xliffInputConntent);
+			String sTarget = "";
+			if (mTU.find()) {
+				// All content in TU
+				sTarget = mTU.group(1) == null  ? "" : mTU.group(1);
+				//System.out.println("mTU.group(1) :::" + i + ":::" + sTarget);
+			}
+			return sTarget;
+		}
+		
+		private String getTranslatedSlideV2(String xliffInputConntent, int iSlide)
+		{
+			Pattern pFileSlide = Pattern.compile("<file[ ]id=\"ppt/slides/slide"+ iSlide + ".xml\"[^<>]*>(.+?)</file>",
 					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 			
 			Matcher mTU = pFileSlide.matcher(xliffInputConntent);
@@ -3554,6 +4494,57 @@ private String loadAsposeLicense() {
 			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
 		}
 		
+		private String[] getTranslatedParagraphSlideV2(String xliffInputConntent ,String targetLanguage, int iSlide, int paragraphID)
+		{
+			Pattern pTU = Pattern.compile("<unit[ ]id=\"SLIDE"+iSlide+"-tu"+paragraphID+"\"[ ]xml:space=\"preserve\"[^<>]*>(.+?)</unit>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+//			Pattern pTarget = Pattern.compile("<source xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/source>",
+			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			
+			Matcher mTU = pTU.matcher(xliffInputConntent);
+			String sTU = "",sTarget = "";
+			if (mTU.find()) {
+				// All content in TU
+				sTU = mTU.group(1) == null  ? "" : mTU.group(1);
+				if (sTU.length() > 0)
+				{
+					Matcher mTarget = pTarget.matcher(sTU);
+					if (mTarget.find()) {
+						sTarget = mTarget.group(1) == null ? "" : mTarget.group(1);
+					}				
+				}
+			}
+//			sTarget = sTarget.replaceAll("<\\/g>", "");
+
+			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
+		}
+		
+		private String[] getTranslatedParagraphSlideSourceV2(String xliffInputConntent ,String targetLanguage, int iSlide, int paragraphID)
+		{
+			Pattern pTU = Pattern.compile("<unit[ ]id=\"SLIDE"+iSlide+"-tu"+paragraphID+"\"[ ]xml:space=\"preserve\"[^<>]*>(.+?)</unit>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			Pattern pTarget = Pattern.compile("<source xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/source>",
+//			Pattern pTarget = Pattern.compile("<target xml:lang=\"" + targetLanguage + "\"[^><]*?>(.+?)<\\/target>",
+					Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			
+			Matcher mTU = pTU.matcher(xliffInputConntent);
+			String sTU = "",sTarget = "";
+			if (mTU.find()) {
+				// All content in TU
+				sTU = mTU.group(1) == null  ? "" : mTU.group(1);
+				if (sTU.length() > 0)
+				{
+					Matcher mTarget = pTarget.matcher(sTU);
+					if (mTarget.find()) {
+						sTarget = mTarget.group(1) == null ? "" : mTarget.group(1);
+					}				
+				}
+			}
+			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
+			
+		}
+		
 		private String[] getTranslatedParagraphSlideSource(String xliffInputConntent ,String targetLanguage, int iSlide, int paragraphID)
 		{
 			Pattern pTU = Pattern.compile("<trans-unit[ ]id=\"SLIDE"+iSlide+"-tu"+paragraphID+"\"[ ]xml:space=\"preserve\"[^<>]*>(.+?)</trans-unit>",
@@ -3578,6 +4569,8 @@ private String loadAsposeLicense() {
 			return StringEscapeUtils.unescapeXml(sTarget).split("<x[ ]id=\"(\\d+)\"\\/>");
 			
 		}
+		
+		
 		
 		public void extractImageFromPDFAllPage(String inputODFFilePath,String outputFilePath,String prefixOfImageFile) {
 			PdfConverter objConverter = new PdfConverter();
@@ -3612,4 +4605,138 @@ private String loadAsposeLicense() {
 			return extractStatus;
 			
 		}
+		
+		public String extractOnlyImageFromFile(String inputFilePath, String outputDirectoryPath, String imageTypeName, String prefixImageFileName) {
+			String result = null;
+			PdfExtractor pdfExtractor = new PdfExtractor();
+			pdfExtractor.bindPdf(inputFilePath);
+			
+			// Extract all the images
+			int i = 1;
+			pdfExtractor.extractImage();
+			while (pdfExtractor.hasNextImage()) {
+				if (imageTypeName.equals(".jpg")) {
+					pdfExtractor.getNextImage(outputDirectoryPath + "/" + prefixImageFileName + i + imageTypeName,
+							ImageType.getJpeg());
+				}
+				if (imageTypeName.equals(".png")) {
+					pdfExtractor.getNextImage(outputDirectoryPath + "/" + prefixImageFileName + i + imageTypeName,
+							ImageType.getPng());
+				}
+				if (imageTypeName.equals(".tiff")) {
+					pdfExtractor.getNextImage(outputDirectoryPath + "/" + prefixImageFileName + i + imageTypeName,
+							ImageType.getTiff());
+				}
+				if (imageTypeName.equals(".bmp")) {
+					pdfExtractor.getNextImage(outputDirectoryPath + "/" + prefixImageFileName + i + imageTypeName,
+							ImageType.getBmp());
+				}
+				if (imageTypeName.equals(".gif")) {
+					pdfExtractor.getNextImage(outputDirectoryPath + "/" + prefixImageFileName + i + imageTypeName,
+							ImageType.getGif());
+				}
+				i++;
+			}
+						
+			return result;
+		}
+		
+		public String convert(String jobID,String inputFileName, String inputContent,
+				String inputPath,AtomicReference<String> sDocxContent, String target) throws Exception {
+			String output = "";
+			try {
+				File workingFile = null;
+				String workingPath = "";
+				
+				//Input is file
+				if (inputPath.length() > 0){
+					File inputFile = new File(inputPath);
+					if (inputFile.exists()){
+						workingPath = oLog.debugPath + "/temp/" + File.separator + jobID + File.separator + inputFileName;
+						workingFile = new File(workingPath);
+						if (!workingFile.getParentFile().exists()) workingFile.getParentFile().mkdirs();
+						FileUtils.copyFile(inputFile,workingFile);
+					}else{
+						String message = "input file doesn't exist";
+						oLog.WriteLog(pageName, "convert", message, jobID, true);
+						throw new Exception(message);
+					}
+				}
+				//Input is filesteam
+				else 
+				{
+					workingPath = oLog.debugPath + "/temp/" + File.separator + jobID + File.separator + inputFileName;
+					workingFile = new File(workingPath);
+					if (!workingFile.getParentFile().exists()) workingFile.getParentFile().mkdirs();
+					byte[] bData = Base64Coder.decode(inputContent);
+					FileUtils.writeByteArrayToFile(workingFile, bData);
+					
+				}
+				oLog.WriteLog(pageName, "convert", "working path=" + workingPath, jobID, false);
+				
+				//check file extension
+				String ext = FilenameUtils.getExtension(workingFile.getPath()).toLowerCase();
+				
+				;
+				
+				
+				try {
+					if (ext.equals("pdf")){
+						if (target.equals("docx")) {
+							String originalPath = workingFile.getPath();
+							String currentPath = workingFile.getPath() + ".docx";
+
+							com.aspose.pdf.Document doc = new com.aspose.pdf.Document(originalPath);
+//							doc.save(currentPath, com.aspose.pdf.SaveFormat.DocX);
+//							doc.setPageLayout(com.aspose.pdf.DocSaveOptions.RecognitionMode.Flow);
+							
+							com.aspose.pdf.SaveOptions.BorderPartStyle bd = new com.aspose.pdf.SaveOptions.BorderPartStyle();
+							int typeConvert = bd.LineType;
+							doc.save(currentPath, typeConvert);
+//							
+							byte[] bData = FileUtils.readFileToByteArray(new File(currentPath));
+							sDocxContent.set(new String(Base64Coder.encode(bData)));
+						}else if(target.equals("html")) {
+							String originalPath = workingFile.getPath();
+							String currentPath = workingFile.getPath() + ".html";
+							
+							com.aspose.pdf.Document doc = new com.aspose.pdf.Document(originalPath);
+							doc.save(currentPath, com.aspose.pdf.SaveFormat.Html);
+							
+							byte[] bData = FileUtils.readFileToByteArray(new File(currentPath));
+							sDocxContent.set(new String(Base64Coder.encode(bData)));
+						}else if(target.equals("text")) {
+							String originalPath = workingFile.getPath();
+							String currentPath = inputPath + ".txt";
+							
+							com.aspose.pdf.Document doc = new com.aspose.pdf.Document(originalPath);
+//							doc.save(currentPath, com.aspose.pdf.SaveFormat.TeX);
+//							byte[] bData = FileUtils.readFileToByteArray(new File(currentPath));
+//							sDocxContent.set(new String(Base64Coder.encode(bData)));
+							
+							TextAbsorber absorber = new TextAbsorber(new TextExtractionOptions(TextExtractionOptions.TextFormattingMode.Raw));
+							doc.getPages().accept(absorber);
+							String text = absorber.getText();
+							try (PrintWriter out = new PrintWriter(currentPath )) {
+								out.println(text);
+							}
+							doc.close();
+						}
+					}else {
+						throw new Exception("This conversation not support yet.");
+					}
+				} catch (Exception e1) {
+					throw e1;
+				}
+				
+				
+			}catch ( Exception e ) {
+				oLog.WriteLog(pageName, "convert",  e.getMessage(), jobID, true);
+				throw e;
+			}
+			return output;
+		}
+		
+		
+		
 }
