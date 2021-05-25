@@ -1,6 +1,7 @@
 package com.omniscien.lsmsoffice.process;
 
 import java.io.File;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletContext;
@@ -25,8 +26,34 @@ public class Merge {
 		// TODO Auto-generated constructor stub
 	}
 	
+	
+	
+	public ReadProp getRp() {
+		return rp;
+	}
+
+
+
+	public void setRp(ReadProp rp) {
+		this.rp = rp;
+	}
+
+
+
 	public void propertiesSetting(String filePath) {
 		rp = new ReadProp(filePath);
+	}
+	
+	public String Merge(String inputfilename,
+			String xliffpath,
+			String sourcelanguage,
+			String targetlanguage,
+			String sOutputPath) throws Exception {
+		int XliffVersion = 1;
+		String output = "";
+		String jobid = generateID();
+		output = Mergr(jobid, inputfilename, xliffpath, sourcelanguage, targetlanguage, sOutputPath, XliffVersion);
+		return output;
 	}
 	
 	public String Mergr(
@@ -35,14 +62,15 @@ public class Merge {
 			String xliffpath,
 			String sourcelanguage,
 			String targetlanguage,
-			String sOutputPath
-			) {
+			String sOutputPath,
+			int XliffVersion
+			) throws Exception {
 		String output = "";
 		
 		String xliffcontent = "";
 		String service = "";
 		
-		output = Merge(jobid, service, inputfilename, xliffcontent, xliffpath, sourcelanguage, targetlanguage, sOutputPath);
+		output = Merge(jobid, service, inputfilename, xliffcontent, xliffpath, sourcelanguage, targetlanguage, sOutputPath, XliffVersion);
 		
 		return output;
 	}
@@ -55,8 +83,8 @@ public class Merge {
 			String xliffpath, 
 			String sourcelanguage,
 			String  targetlanguage,
-			String sOutputPath
-			) {
+			String sOutputPath, int XliffVersion
+			) throws Exception {
 		String sOutput = "";
 		
 		
@@ -67,6 +95,7 @@ public class Merge {
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			}
 
 			oLog.debugMode = true;
@@ -109,6 +138,7 @@ public class Merge {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		
 		try {
@@ -122,14 +152,22 @@ public class Merge {
 				String sLangTarget,
 				String sOutputPath
 			 */
-			sOutput = oProcess.merge(jobid, service, inputfilename, xliffcontent, xliffpath, sourcelanguage, targetlanguage, sOutputPath);
+			sOutput = oProcess.merge(jobid, service, inputfilename, xliffcontent, xliffpath, sourcelanguage, targetlanguage, sOutputPath, XliffVersion);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		
 		return sOutput;
 		
+	}
+	
+	/*** Common generate id ***/
+	public String generateID() {
+		String idStr = new String();
+		idStr = UUID.randomUUID().toString();
+		return idStr;
 	}
 
 }
