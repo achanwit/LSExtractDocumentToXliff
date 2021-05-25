@@ -1,5 +1,7 @@
 package com.omniscien.lsmsoffice.util;
 
+import java.util.HashMap;
+
 public class Constant {
 
 	public Constant() {
@@ -38,9 +40,6 @@ public class Constant {
 
 	public static final String TimeToRemoveJobMinutes = "TimeToRemoveJobMinutes";
 	
-	public static final String debugMode = "debugMode";
+	public static final String debugMode = "debugMode";	
 	
-	public static final String debugPath = "debugPath";
-	
-	public static final String log4JPath = "log4JPath";
 }
